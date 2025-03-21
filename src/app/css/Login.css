@@ -1,0 +1,5 @@
+.bg-login{
+    background-image: url("../../app/images/mainWalp.jpg");
+    background-size: cover;
+    background-position: center;
+}
