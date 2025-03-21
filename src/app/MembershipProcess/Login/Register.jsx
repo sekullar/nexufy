@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { createClient } from "@supabase/supabase-js";
 import Image from "next/image";
 import GoogleIcon from "../../images/google.png"
-import toast from "react-hot-toast";
+import toast from "react-hot-toast"
 
 const Register = ({registerParam}) => {
 
