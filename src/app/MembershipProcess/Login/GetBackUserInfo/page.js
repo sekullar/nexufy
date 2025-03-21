@@ -6,32 +6,36 @@ import { createClient } from "@supabase/supabase-js";
 import Loading2 from '@/app/Tools/Loading2';
 
 
-// const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
-// const supabaseKey = process.env.NEXT_PUBLIC_DBKEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
+const supabaseKey = process.env.NEXT_PUBLIC_DBKEY;
 
-// const supabase = createClient(supabaseUrl,supabaseKey);
+const supabase = createClient(supabaseUrl,supabaseKey);
+
+if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase URL ve KEY tanımlı değil!");
+}
 
 
 const AuthCallback = () => {
 
-    // const getUserData = async () => {
-    //     const { data: sessionData, error } = await supabase.auth.getSession();
+    const getUserData = async () => {
+        const { data: sessionData, error } = await supabase.auth.getSession();
 
-    //     if (error || !sessionData.session) {
-    //         console.error('Oturum alınamadı:', error?.message || 'Bilinmeyen hata');
-    //         router.push('/login'); 
-    //         return;
-    //     }
+        if (error || !sessionData.session) {
+            console.error('Oturum alınamadı:', error?.message || 'Bilinmeyen hata');
+            router.push('/login'); 
+            return;
+        }
 
-    //     const user = sessionData.session.user;
-    //     console.log('Kullanıcı Bilgileri:', user);
+        const user = sessionData.session.user;
+        console.log('Kullanıcı Bilgileri:', user);
 
-    //     if (user.email === 'sekusoftware@gmail.com') {
-    //         router.push('/SekuSoftwareAdminPanel');
-    //     } else {
-    //         router.push('/Home');
-    //     }
-    // }; 
+        if (user.email === 'sekusoftware@gmail.com') {
+            router.push('/SekuSoftwareAdminPanel');
+        } else {
+            router.push('/Home');
+        }
+    }; 
 
     const router = useRouter();
 
