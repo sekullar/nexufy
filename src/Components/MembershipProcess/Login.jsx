@@ -1,11 +1,11 @@
 import Image from "next/image"
-import Logo from "../../images/logo.svg"
-import GoogleIcon from "../../images/google.png"
+import Logo from "../../../public/icons/logo.svg"
+import GoogleIcon from "../../../public/images/google.png"
 import { useEffect, useState, useContext } from "react"
 import { createClient } from "@supabase/supabase-js"
 import toast from "react-hot-toast";
-import LogSender from "@/app/Tools/LogSender"
-import { useUserContext } from "@/app/Context/UserContext"
+import LogSender from "@/Tools/LogSender"
+import { useUserContext } from "@/Context/UserContext"
 import { useRouter } from "next/navigation"
 
 const Login = ({ loginSendParam }) => {

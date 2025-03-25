@@ -1,5 +1,5 @@
-import Logo from "../../images/logo.svg"
-import Users from "../../images/users.svg"
+import Logo from "../../../../public/icons/logo.svg"
+import Users from "../../../../public/icons/users.svg"
 import Image from "next/image"
 
 const Header = () => {

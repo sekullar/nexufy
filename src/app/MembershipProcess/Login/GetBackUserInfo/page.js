@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from "@supabase/supabase-js";
-import Loading2 from '@/app/Tools/Loading2';
+import Loading2 from '@/Tools/Loading2';
 
 
 const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;

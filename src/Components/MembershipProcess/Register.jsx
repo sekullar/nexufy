@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 import { createClient } from "@supabase/supabase-js";
 import Image from "next/image";
-import GoogleIcon from "../../images/google.png"
+import GoogleIcon from "../../../public/images/google.png"
 import toast from "react-hot-toast"
-import LogSender from "@/app/Tools/LogSender";
+import LogSender from "@/Tools/LogSender";
 
 const Register = ({registerParam}) => {
 

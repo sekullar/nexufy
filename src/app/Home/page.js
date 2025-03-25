@@ -1,5 +1,5 @@
-import Header from "./HomeComponents/Header"
-import LeftBar from "./HomeComponents/LeftBar"
+import Header from "../../Components/MembershipProcess/HomeComponents/Header"
+import LeftBar from "../../Components/MembershipProcess/HomeComponents/LeftBar"
 
 const Home = () => {
     return(

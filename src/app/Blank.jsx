@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Walp from "./images/mainWalp.jpg"
+import Walp from "../../public/images/mainWalp.jpg"
 import { useRouter } from 'next/navigation';
-import Loading2 from "./Tools/Loading2";
+import Loading2 from "../Tools/Loading2";
 import { createClient } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
-import RandomText from "./Tools/RandomText";
+import RandomText from "../Tools/RandomText";
 
 const Blank = () => {
     const router = useRouter();

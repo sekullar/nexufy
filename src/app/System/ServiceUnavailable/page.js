@@ -1,4 +1,4 @@
-import Logo from "../../images/logo.svg"
+import Logo from "../../../../public/icons/logo.svg"
 import Image from "next/image"
 
 const ServiceUnavailable = () => {

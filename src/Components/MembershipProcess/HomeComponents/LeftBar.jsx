@@ -1,7 +1,7 @@
-import Annon from "../../images/announcement.svg"
-import Message from "../../images/message.svg"
-import Sound from "../../images/headphone.svg"
-import Settings from "../../images/settings.svg"
+import Annon from "../../../../public/icons/announcement.svg"
+import Message from "../../../../public/icons/message.svg"
+import Sound from "../../../../public/icons/headphone.svg"
+import Settings from "../../../../public/icons/settings.svg"
 import Image from "next/image"
 
 const LeftBar = () => {

@@ -1,7 +1,7 @@
 "use client"
-import Login from "./Login"
+import Login from "../../../Components/MembershipProcess/Login"
 import { useState } from "react"
-import Register from "./Register"
+import Register from "../../../Components/MembershipProcess/Register"
 
 const MembershipProcess = () => {
 
