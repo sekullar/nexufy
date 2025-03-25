@@ -1,4 +1,3 @@
-import "../css/Loading2Late2s.css"
 
 const Loading2 = () => {
     return(
