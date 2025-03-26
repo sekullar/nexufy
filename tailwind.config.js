@@ -8,12 +8,14 @@ module.exports = {
     extend: {
         colors: {
             'theme-gray-1': '#1e1e1e',
+            'theme-gray-2': '#272727',
             'input': '#404040',
             'btn': '#9b59b6',
-            'theme-pink': '#9b59b6',
+            'theme-pink': '#9B59B6',
+            "dark-transparent": "rgba(0, 0, 0, 0.37)"
         },
         backgroundImage: {
-            'login': "url('/app/images/mainWalp.jpg')",
+            'login': "url('/public/images/mainWalp.jpg')",
         },
         height: {
             'spec-screen': 'calc(100vh - 66px)',
@@ -56,15 +58,15 @@ module.exports = {
             },
             nMove: {
                 '0%': { transform: 'translateX(0)' },
-                '100%': { transform: 'translateX(-118px)' },
+                '100%': { transform: 'translateX(-83px)' },
             },
         },
         fontFamily: {
-            'logo': ['Logo', 'sans-serif'],
-            'title': ['Red Hat', 'sans-serif'],
-            'title-bold': ['Red Hat Bold', 'sans-serif'],
-            'text': ['Open Sans Regular', 'sans-serif'],
-            'text-bold': ['Open Sans Bold', 'sans-serif'],
+            'logo-font': ['Logo'],
+            'title-font': ['Red Hat'],
+            'title-font-bold': ['Red Hat Bold'],
+            'text-font': ['Open Sans Regular'],
+            'text-font-bold': ['Open Sans Bold'],
         }
     }
 },

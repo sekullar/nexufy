@@ -2,16 +2,30 @@
 
 import { createContext, useContext, useState } from 'react';
 
-const UserContext = createContext();
+const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
-    const [user,setUser] = useState(null)
+    const [user, setUser] = useState(null);
+    const [userNew, setUserNew] = useState(null);
+    const [temporaryMailRegister,setTemporaryMailRegister] = useState(null);
+
+    const context = {
+        user,
+        setUser,
+        userNew,
+        setUserNew,
+        temporaryMailRegister,
+        setTemporaryMailRegister
+    }
 
     return (
-        <UserContext.Provider value={{ user,setUser }}>
+        <UserContext.Provider value={context}>
             {children}
         </UserContext.Provider>
     );
 };
 
-export const useUserContext = () => useContext(UserContext);
+export const useUserContext = () => { 
+    const context = useContext(UserContext);
+    return context;
+};

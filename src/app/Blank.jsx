@@ -72,11 +72,13 @@ const Blank = () => {
     return (
         <>
             <div className="flex justify-center flex-col items-center h-screen w-full relative">
-                <div className="relative">
-                    <p className="animated-text n-letter z-50 text-7xl logo-font z-10 leading-[80px]">N</p>
-                    <p className="absolute right-0 exufy-ani top-0 z-10 animated-text text-7xl logo-font leading-[80px]">exufy</p>
+                <div className="relative mb-8">
+                    <p className="animated-text text-theme-pink animate-nMove n-letter z-50 text-7xl logo-font z-10 leading-[80px]">N</p>
+                    <p className="absolute right-[-89px] text-theme-pink animate-exufy ms-5 top-0 z-10 animated-text text-7xl logo-font leading-[80px]">exufy</p>
                 </div>
-                <Loading2 />
+                <div className="opening-ani">
+                    <Loading2 />
+                </div>
                 <Image 
                     src={Walp} 
                     alt="Preload Image"
@@ -87,7 +89,7 @@ const Blank = () => {
                 />
 
                 <div className="flex justify-center bottom-0 absolute">
-                    <p className="text-xl text-font-bold color-theme-pink mb-8"><RandomText /></p>
+                    <p className="text-xl text-font-bold text-theme-pink mb-8"><RandomText /></p>
                 </div>
             </div>
         </>

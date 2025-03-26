@@ -7,10 +7,15 @@ import toast from "react-hot-toast";
 import LogSender from "@/Tools/LogSender"
 import { useUserContext } from "@/Context/UserContext"
 import { useRouter } from "next/navigation"
+import SoundPlayer from "@/Tools/SoundPlayer";
+
 
 const Login = ({ loginSendParam }) => {
 
     const router = useRouter();
+
+    const [notificationMode,setNotificationMode] = useState("");
+    const [notificationTrigger,setNotificationTrigger] = useState(0);
 
     const [loginSend, setLoginSend] = useState(true);
     const [imageSrc, setImageSrc] = useState("");
@@ -23,6 +28,9 @@ const Login = ({ loginSendParam }) => {
 
     const {user,setUser} = useUserContext();
 
+    console.log({user});
+    
+
     useEffect(() => {
         loginSendParam(loginSend);
 
@@ -31,7 +39,7 @@ const Login = ({ loginSendParam }) => {
             setImageSrc(preloadedImage);
         }
     }, [loginSend]);
-1
+
     const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
     const supabaseKey = process.env.NEXT_PUBLIC_DBKEY;
 
@@ -40,6 +48,8 @@ const Login = ({ loginSendParam }) => {
     const loginUser = async () => {
         if(!email || !password){
             toast.error("Tüm bilgileri doldurduğuna emin misin?")
+            setNotificationMode("error")
+            setNotificationTrigger(notificationTrigger + 1);
             return
         }
         else{
@@ -53,6 +63,8 @@ const Login = ({ loginSendParam }) => {
                 if(error){
                     toast.dismiss();
                     toast.error("E-Postanız veya şifreniz yanlış")
+                    setNotificationMode("error")
+                    setNotificationTrigger(notificationTrigger + 1);
                 }
                 else{
                     toast.dismiss();
@@ -82,13 +94,16 @@ const Login = ({ loginSendParam }) => {
             console.log(error);
             toast.dismiss();
             toast.error("Kayıt olunurken bir hata oluştu!")
+            setNotificationMode("error")
+            setNotificationTrigger(notificationTrigger + 1);
         } else {
             console.log(data);
         }
     }
 
     return (
-        <>
+        <>  
+            <SoundPlayer trigger={notificationTrigger} mode={notificationMode}/>
             <LogSender logs={logsErrorSender} mail={email} category={"Login"} triggerOpen={logSenderTrigger}/>
             <div className="h-screen bg-login w-full relative">
                 {imageSrc && (
@@ -121,8 +136,8 @@ const Login = ({ loginSendParam }) => {
                             </div>
                             <button className="bg-btn text-2xl rounded-lg text-font-bold py-4" onClick={() => loginUser()}>Giriş yap</button>
                             <div className="flex flex-col items-center mt-8 gap-3">
-                                <p href="#" className="color-theme-pink text-font-bold cursor-pointer" onClick={() => setLoginSend(false)}>Hesap Oluştur</p>
-                                <p href="#" className="color-theme-pink text-font-bold cursor-pointer">Giriş yaparken sorun mu yaşıyorsun?</p>
+                                <p href="#" className="text-theme-pink text-font-bold cursor-pointer" onClick={() => setLoginSend(false)}>Hesap Oluştur</p>
+                                <p href="#" className="text-theme-pink text-font-bold cursor-pointer">Giriş yaparken sorun mu yaşıyorsun?</p>
                             </div>
                         </div>
                     </div>

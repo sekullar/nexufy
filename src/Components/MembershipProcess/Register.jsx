@@ -4,6 +4,7 @@ import Image from "next/image";
 import GoogleIcon from "../../../public/images/google.png"
 import toast from "react-hot-toast"
 import LogSender from "@/Tools/LogSender";
+import SoundPlayer from "@/Tools/SoundPlayer";
 
 const Register = ({registerParam}) => {
 
@@ -23,6 +24,8 @@ const Register = ({registerParam}) => {
     const [megaUserId,setMegaUserId] = useState("");
     const [logSenderTrigger,setLogSenderTrigger] = useState(0);
 
+    const [notificationMode,setNotificationMode] = useState("");
+    const [notificationTrigger,setNotificationTrigger] = useState(0);
 
     const googleLogin = async () => {
         toast.loading("Yükleniyor...")
@@ -37,6 +40,8 @@ const Register = ({registerParam}) => {
             console.log(error);
             toast.dismiss();
             toast.error("Kayıt olunurken bir hata oluştu!")
+            setNotificationMode("error")
+            setNotificationTrigger(notificationTrigger + 1);
         }
         else{
             console.log(data);
@@ -48,10 +53,14 @@ const Register = ({registerParam}) => {
     const registerUser = async () => {
         if(password != passwordCheck){
             toast.error("Şifreler eşleşmiyor")
+            setNotificationMode("error")
+            setNotificationTrigger(notificationTrigger + 1);
             return
         }
         else if(!username || !mail || !password || !passwordCheck){
             toast.error("Bütün bilgileri doldurduğuna emin misin?")
+            setNotificationMode("error")
+            setNotificationTrigger(notificationTrigger + 1);
             return
         }
         else{
@@ -65,18 +74,22 @@ const Register = ({registerParam}) => {
                 if(error){
                     toast.dismiss();
                     toast.error("Lütfen tüm bilgileri eksiksiz doldurun")
+                    setNotificationMode("error")
+                    setNotificationTrigger(notificationTrigger + 1);
                     setErrorForLog(error);
                     setLogSenderTrigger(1);
                 }
                 else{
                     console.log(data);
-                    await saveUser(data.user.id); 
+                    saveUser(data.user.id); 
 
                 }
             }
             catch(error){
                 toast.dismiss();
                 toast.error("Kayıt olunurken bir hata oluştu!")
+                setNotificationMode("error")
+                setNotificationTrigger(notificationTrigger + 1);
                 setErrorForLog(error);
                 setLogSenderTrigger(1);
             }
@@ -100,12 +113,14 @@ const Register = ({registerParam}) => {
                 setLogSenderTrigger(1);
             }
             else{
+                console.log(data);
                 toast.dismiss();
                 setRegister(true);
                 toast.success("Başarıyla kayıt oldunuz! Lütfen yeniden giriş yapın.")
             }
         }
         catch(error){
+            console.log(error);
             setErrorForLog(error);
             setLogSenderTrigger(1);
         }   
@@ -117,6 +132,7 @@ const Register = ({registerParam}) => {
 
     return(
         <>  
+            <SoundPlayer trigger={notificationTrigger} mode={notificationMode}/>
             <LogSender logs={errorForLog} mail={`noUser//${mail}`} category={"register"} triggerOpen={logSenderTrigger}/>
             <div className="bg-login h-screen w-full flex justify-center">
                 <div className="flex flex-col justify-center">
@@ -155,7 +171,7 @@ const Register = ({registerParam}) => {
                             <p className="text-font-bold">Google ile kayıt ol</p>
                         </div>
                         <button className="bg-btn px-8 py-2 rounded-lg text-xl text-font-bold mt-4" onClick={() => registerUser()}>Kayıt Ol</button>
-                        <p className="color-theme-pink text-font-bold text-lg mt-4" onClick={() => setRegister(true)}>Hesabın zaten var mı?</p>
+                        <p className="text-theme-pink text-font-bold text-lg mt-4" onClick={() => setRegister(true)}>Hesabın zaten var mı?</p>
                     </div>
                 </div>
             </div>

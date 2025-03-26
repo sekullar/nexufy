@@ -2,12 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Logo";
+  font-weight: 500;
+  src: url("/fonts/JosefinSans-VariableFont_wght.ttf") format("TrueType");
+  font-display: swap;
+}
 
+@font-face{
+  font-family: "Red Hat";
+  font-weight: 500;
+  src: url("/fonts/RedHat.woff2") format("woff2");
+}
+
+@font-face{
+  font-family: "Red Hat Bold";
+  font-weight: 500;
+  src: url("/fonts/RedHatBold.woff2") format("woff2");
+}
+
+@font-face{
+  font-family: "Open Sans Regular";
+  font-weight: 500;
+  src: url("/fonts/OpenSansRegular.woff2") format("woff2");
+}
+
+@font-face{
+  font-family: "Open Sans Bold";
+  font-weight: 600;
+  src: url("/fonts/OpenSansBold.woff2") format("woff2");
+}
+
+
+.logo-font{
+  font-family: "Logo";
+}
+
+.title-font{
+  font-family: "Red Hat";
+}
+
+.title-font-bold{
+  font-family: "Red Hat Bold";
+}
+
+.text-font{
+  font-family: "Open Sans Regular";
+}
+
+.text-font-bold{
+  font-family: "Open Sans Bold";
+}
+
+.bg-global{
+  background-image: url("../../public/images/mainWalp.jpg");
+}
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
+
 
 @theme inline {
   --color-background: var(--background);
@@ -28,3 +83,196 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* From Uiverse.io by G4b413l */ 
+.three-body {
+  --uib-size: 35px;
+  --uib-speed: 0.8s;
+  --uib-color: #9830c5;
+  position: relative;
+  display: inline-block;
+  height: var(--uib-size);
+  width: var(--uib-size);
+  animation: spin78236 calc(var(--uib-speed) * 2.5) infinite linear;
+ }
+ 
+ .three-body__dot {
+  position: absolute;
+  height: 100%;
+  width: 30%;
+ }
+ 
+ .three-body__dot:after {
+  content: '';
+  position: absolute;
+  height: 0%;
+  width: 100%;
+  padding-bottom: 100%;
+  background-color: var(--uib-color);
+  border-radius: 50%;
+ }
+ 
+ .three-body__dot:nth-child(1) {
+  bottom: 5%;
+  left: 0;
+  transform: rotate(60deg);
+  transform-origin: 50% 85%;
+ }
+ 
+ .three-body__dot:nth-child(1)::after {
+  bottom: 0;
+  left: 0;
+  animation: wobble1 var(--uib-speed) infinite ease-in-out;
+  animation-delay: calc(var(--uib-speed) * -0.3);
+ }
+ 
+ .three-body__dot:nth-child(2) {
+  bottom: 5%;
+  right: 0;
+  transform: rotate(-60deg);
+  transform-origin: 50% 85%;
+ }
+ 
+ .three-body__dot:nth-child(2)::after {
+  bottom: 0;
+  left: 0;
+  animation: wobble1 var(--uib-speed) infinite
+     calc(var(--uib-speed) * -0.15) ease-in-out;
+ }
+ 
+ .three-body__dot:nth-child(3) {
+  bottom: -5%;
+  left: 0;
+  transform: translateX(116.666%);
+ }
+ 
+ .three-body__dot:nth-child(3)::after {
+  top: 0;
+  left: 0;
+  animation: wobble2 var(--uib-speed) infinite ease-in-out;
+ }
+ 
+ @keyframes spin78236 {
+  0% {
+   transform: rotate(0deg);
+  }
+ 
+  100% {
+   transform: rotate(360deg);
+  }
+ }
+ 
+ @keyframes wobble1 {
+  0%,
+   100% {
+   transform: translateY(0%) scale(1);
+   opacity: 1;
+  }
+ 
+  50% {
+   transform: translateY(-66%) scale(0.65);
+   opacity: 0.8;
+  }
+ }
+ 
+ @keyframes wobble2 {
+  0%,
+   100% {
+   transform: translateY(0%) scale(1);
+   opacity: 1;
+  }
+ 
+  50% {
+   transform: translateY(66%) scale(0.65);
+   opacity: 0.8;
+  }
+ }
+
+ .opening-ani{
+  animation-name: openingAni;
+  animation-duration: .5s;
+  animation-delay: 2.2s;
+  animation-timing-function: ease;
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
+  animation-direction: alternate;
+ }
+
+ @keyframes openingAni {
+    from{
+      opacity: 0;
+    }
+
+    to{
+      opacity: 1;
+    }
+ }
+
+/* Happy ani */
+
+.face {
+  width: 200px;
+  height: 200px;
+  background-color: #9c4e97; /* Mor renk */
+  border-radius: 50%;
+  position: relative;
+  animation: faceAnimation 2s infinite alternate;
+}
+
+.eye {
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 50px;
+  animation: blink 2s infinite;
+}
+
+.eye.left {
+  left: 50px;
+}
+
+.eye.right {
+  right: 50px;
+}
+
+.smile {
+  width: 120px;
+  height: 60px;
+  border-bottom: 10px solid white;
+  border-radius: 0 0 60px 60px;
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: smileAnimation 2s infinite alternate;
+}
+
+@keyframes faceAnimation {
+  0% {
+      transform: scale(1);
+  }
+  100% {
+      transform: scale(1.1);
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+      height: 30px;
+  }
+  50% {
+      height: 5px;
+  }
+}
+
+@keyframes smileAnimation {
+  0% {
+      transform: translateX(-50%) rotate(-10deg);
+  }
+  100% {
+      transform: translateX(-50%) rotate(10deg);
+  }
+}
+ 

@@ -1,13 +1,9 @@
-import Header from "../../Components/MembershipProcess/HomeComponents/Header"
-import LeftBar from "../../Components/MembershipProcess/HomeComponents/LeftBar"
+import HomeMain from "@/Components/MembershipProcess/HomeComponents/HomeMain"
 
 const Home = () => {
     return(
         <>
-            <Header />
-            <div className="flex">
-                <LeftBar />
-            </div>
+            <HomeMain />
         </>
     )
 }
