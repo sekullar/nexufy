@@ -18,7 +18,7 @@ const CheckUser = () => {
         getUserData();
     }, [router]);
 
-    const { user,setUser,setUserNew,setTemporaryMailRegister} = useUserContext();
+    const { user,setUser,setUserNew,setTemporaryMailRegister,setUserData} = useUserContext();
     console.log("auth", user);
     
     const getUserData = async () => {
@@ -34,6 +34,7 @@ const CheckUser = () => {
         console.log('Kullanıcı Bilgileri:', user);
         userControl(user.email)
         setTemporaryMailRegister(user.email)
+        getUserDataAll(user.email)
         setUser(user);
 
         if (user.email === 'sekusoftware@gmail.com') {
@@ -42,6 +43,22 @@ const CheckUser = () => {
             router.push('/Home');
         }
     }; 
+
+    const getUserDataAll = async (mail) => {
+        const {data,error} = await supabase
+        .from("users")
+        .select("*")
+        .eq("email",mail)
+
+        if(error){
+            console.log(error);
+            logout();
+        }       
+        else{
+            console.log("Bütün kullanıcı dataları burada", data)
+            setUserData(data);
+        }
+    }
 
 
     const userControl = async (email) => {

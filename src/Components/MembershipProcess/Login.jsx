@@ -26,10 +26,7 @@ const Login = ({ loginSendParam }) => {
     const [logSenderTrigger,setLogSenderTrigger] = useState(0);
     const [logsErrorSender,setLogsErrorSender] = useState("");
 
-    const {user,setUser} = useUserContext();
-
-    console.log({user});
-    
+    const {user,setUser,setUserData} = useUserContext();    
 
     useEffect(() => {
         loginSendParam(loginSend);
@@ -70,8 +67,11 @@ const Login = ({ loginSendParam }) => {
                     toast.dismiss();
                     toast.success("Giriş yapıldı! Hoşgeldiniz!")
                     console.log(data);
+                    localStorage.setItem('access_token', data.session.access_token);
+                    localStorage.setItem('refresh_token', data.session.refresh_token);
+                    localStorage.setItem('expires_at', data.session.expires_at);
                     setUser(data.user);
-                    router.push("/Home")
+                    getUserDataAll(data.user.email)
                 }
             }
             catch(error){
@@ -79,6 +79,23 @@ const Login = ({ loginSendParam }) => {
                 setLogsErrorSender(error);
             }   
             }
+    }
+
+    const getUserDataAll = async (mail) => {
+        const {data,error} = await supabase
+        .from("users")
+        .select("*")
+        .eq("email",mail)
+
+        if(error){
+            console.log(error);
+            logout();
+        }       
+        else{
+            console.log("Bütün kullanıcı dataları burada", data)
+            setUserData(data);
+            router.push("/Home")
+        }
     }
 
     const googleLogin = async () => {

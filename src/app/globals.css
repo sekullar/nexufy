@@ -275,4 +275,16 @@ body {
       transform: translateX(-50%) rotate(10deg);
   }
 }
+
+.accordion-start div div h2 button{
+  justify-content: space-between;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  outline: 0px;
+}
+
+.accordion-start div hr{
+  display: none !important;
+}
+ 
  

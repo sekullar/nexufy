@@ -8,9 +8,13 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [userNew, setUserNew] = useState(null);
     const [temporaryMailRegister,setTemporaryMailRegister] = useState(null);
+    const [userData, setUserData] = useState("noAccess");
+
 
     const context = {
         user,
+        userData,
+        setUserData,
         setUser,
         userNew,
         setUserNew,

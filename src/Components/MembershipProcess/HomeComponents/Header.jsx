@@ -1,13 +1,23 @@
+import { useEffect, useState } from "react"
 import Logo from "../../../../public/icons/logo.svg"
 import Users from "../../../../public/icons/users.svg"
 import Image from "next/image"
 
-const Header = () => {
+const Header = ({triggerOuterHeader}) => {
+
+    const [triggerOuterState,setTriggetOuterState] = useState(0);
+
+    useEffect(() => {
+        if(triggerOuterState != 0){
+            triggerOuterHeader(triggerOuterState);
+        }
+    }, [triggerOuterState])
+
     return(
         <>
             <div className="flex justify-between items-center bg-theme-gray-1 p-2">
                 <div className="flex items-center">
-                    <Image src={Logo} alt="Logo" className="w-[50px]"/>
+                    <Image src={Logo} alt="Logo" onClick={() => setTriggetOuterState(triggerOuterState + 1)} className="w-[50px]"/>
                     <div className="flex items-center ms-8 gap-4">
                         <p className="title-font-bold text-xl">Sunucu İsmi</p>
                         <p className="title-font-bold opacity-70"># Kanal bilgisi</p>

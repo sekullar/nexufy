@@ -9,6 +9,7 @@ module.exports = {
         colors: {
             'theme-gray-1': '#1e1e1e',
             'theme-gray-2': '#272727',
+            'theme-gray-3': '#222222',
             'input': '#404040',
             'btn': '#9b59b6',
             'theme-pink': '#9B59B6',
@@ -19,6 +20,8 @@ module.exports = {
         },
         height: {
             'spec-screen': 'calc(100vh - 66px)',
+            'spec-screen-2': 'calc(100vh - 85px)',
+            'spec-screen-3': 'calc(100vh - 150px)',
         },
         animation: {
             'fadeIn': 'fadeIn 0.5s ease 2.1s forwards',
