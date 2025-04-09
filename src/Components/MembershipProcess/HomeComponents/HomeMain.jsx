@@ -14,9 +14,9 @@ import { useInterfaceContext } from "@/Context/InterfaceContext";
 
 const HomeMain = () => {
 
-    const { userNew,userData} = useUserContext();
+    const { userNew,userData,setUserNew} = useUserContext();
 
-    const {setServerData} = useInterfaceContext();
+    const {setServerData,setArticleLoading,getBackUserNew} = useInterfaceContext();
 
     const [userLastSelectedServer,setUserLastSelectedServer] = useState([]);
 
@@ -57,35 +57,56 @@ const HomeMain = () => {
         }
     }, [triggerOuter])
 
+    useEffect(() => {
+        if(getBackUserNew){
+            setUserNew(false);
+        }
+    }, [getBackUserNew])
+
     
     useEffect(() => {
+        console.log(userData)
         if(userData == "noAccess"){
             router.push("/")
         }
         else{
-            getServerInfo(userData[0].lastSelectedServerId);
+            if(userData[0]?.lastSelectedServerId){
+                getServerInfo(userData[0]?.lastSelectedServerId);
+            }
+            else{
+                router.push("/Home")
+                setLoading(false)
+            }
         }
     }, [])
 
     const getServerInfo = async (serverId) => {
-        setLoading(true);
-        try{
-            const {data,error} = await supabase
-            .from("servers")
-            .select("*")
-            .eq("id",serverId) 
-            
-            if(error){
-                console.log(error)
+        console.log(serverId)
+        if(serverId){
+            setLoading(true);
+            try{
+                const {data,error} = await supabase
+                .from("servers")
+                .select("*")
+                .eq("id",serverId) 
+                
+                if(error){
+                    console.log(error)
+                }
+                if(data){
+                    console.log(data);
+                    setServerData(data);
+                    setLoading(false);
+                    setArticleLoading(false);
+                }
             }
-            if(data){
-                console.log(data);
-                setServerData(data);
+            catch(error){
+                console.log(error);
                 setLoading(false);
             }
         }
-        catch(error){
-            console.log(error);
+        else{
+            setLoading(false);
         }
     }
 

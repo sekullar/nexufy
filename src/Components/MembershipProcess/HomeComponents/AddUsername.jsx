@@ -5,9 +5,10 @@ import Loading2 from "@/Tools/Loading2";
 import SoundPlayer from "@/Tools/SoundPlayer";
 import LogSender from "@/Tools/LogSender";
 import { createClient } from "@supabase/supabase-js";
-import { useState } from "react";
+import { useInsertionEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useUserContext } from "@/Context/UserContext";
+import { useInterfaceContext } from "@/Context/InterfaceContext";
 
 const AddUsername = () => {
 
@@ -18,7 +19,8 @@ const AddUsername = () => {
 
     const [usernamePar,setUsernamePar] = useState("");
     const [loading,setLoading] = useState(false);
-    const [usernameAlreadyHave,setUsernameAlreadyHave] = useState(false); 
+    const [usernameAlreadyHave,setUsernameAlreadyHave] = useState(false);
+    
 
     const [notificationMode,setNotificationMode] = useState("");
     const [notificationTrigger,setNotificationTrigger] = useState(0);
@@ -27,6 +29,9 @@ const AddUsername = () => {
     const [errorForLog,setErrorForLog] = useState("");
 
     const {temporaryMailRegister} = useUserContext();
+
+    const {googleId,setGetBackUserNew,googleMail} = useInterfaceContext();
+    const {setUserData} = useUserContext();
 
 
     const checkUsername = async () => {
@@ -64,7 +69,7 @@ const AddUsername = () => {
                         setUsernameAlreadyHave(true)
                     }
                     else{
-                        createUserWithUsername();
+                        createUserWithUsername(googleId,usernamePar);
                     }
                 }
             }
@@ -74,7 +79,24 @@ const AddUsername = () => {
         }
     }
 
-    const createUserWithUsername = async () => {
+    const getUserDataAll = async (mail) => {
+        const {data,error} = await supabase
+        .from("users")
+        .select("*")
+        .eq("email",mail)
+
+        if(error){
+            console.log(error);
+            logout();
+        }       
+        else{
+            setUserData(data);
+            setGetBackUserNew(true);
+            toast.success("Kullanıcı adı başarıyla kaydedildi!")
+        }
+    }
+
+    const createUserWithUsername = async (userId,username) => {
         try{        
             const {data,error} = await supabase
             .from("users")
@@ -96,11 +118,12 @@ const AddUsername = () => {
                 console.log(data);
                 toast.dismiss();
                 setLoading(false);
-                toast.success("Kullanıcı adı başarıyla kaydedildi!")
+                getUserDataAll(googleMail)
             }
         }
         catch(error){
-            toast.dismiss("Kullanıcı adı kaydedilirken bir hata oluştu!");
+            toast.dismiss();
+            toast.error("Kullanıcı adı kaydedilirken bir hata oluştu!");
             setNotificationMode("error")
             setNotificationTrigger(notificationTrigger + 1);
             console.log(error);
@@ -145,3 +168,6 @@ const AddUsername = () => {
 }
 
 export default AddUsername
+
+
+// YENİ GOOGLE KULLANICILARIN GOOGLE KAYDI YAPILIRKEN KULLANICI ADI KAYDEDİLİYOR ANCAK YÖNLENDİRME YAPMIYOR 

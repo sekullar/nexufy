@@ -21,6 +21,9 @@ const Article = ({chatInner}) => {
 
     const [messageVal,setMessageVal] = useState("");
 
+    const divRef = useRef(null);
+
+
     const SendMessage = async (messageContent,userId,serverId,textChannelId,senderName) => {
         try{
             const { data, error } = await supabase
@@ -47,10 +50,6 @@ const Article = ({chatInner}) => {
         }
     }
 
-    useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, [messageHistory]); 
-
       const handleKeyDown = (e) => {
         if(e.key === "Enter"){
             e.preventDefault();
@@ -60,6 +59,21 @@ const Article = ({chatInner}) => {
             SendMessage(currentMessage, userData[0].id, serverData[0].id, lastSelectedTextChannel, userData[0].username);
         }
     }
+
+
+    useEffect(() => {
+        if (divRef.current) {
+            divRef.current.scrollTop = divRef.current.scrollHeight;
+        }
+    }, [messageHistory]); 
+
+    useEffect(() => {
+        if (divRef.current) {
+            divRef.current.scrollTop = divRef.current.scrollHeight;
+        }
+    }, []); 
+
+   
     
 
     return(
@@ -79,11 +93,11 @@ const Article = ({chatInner}) => {
                 {articleValue == "chat" ? 
                 <>
                     <div className="flex flex-col justify-between w-full">
-                        <div className="h-spec-screen-3 p-5 overflow-auto">
+                        <div ref={divRef} className="h-spec-screen-3 p-5 overflow-auto">
                             {messageHistory && messageHistory.map((message,key) => {
                                 return(
-                                    <div  key={key} className="flex gap-3 mb-7">
-                                        <div className="bg-black px-4 rounded-xl flex items-center">
+                                    <div  key={key} className="flex gap-3 mb-7 items-top">
+                                        <div className="bg-black px-3 rounded-xl flex items-center min-w-[45px] h-[45px] w-[45px]">
                                             <Image width={25} height={25} className="" src={User} alt="User"/>
                                         </div>
                                         <div className="flex flex-col">
@@ -93,7 +107,7 @@ const Article = ({chatInner}) => {
                                     </div>
                                 )
                             })}
-                            <div ref={bottomRef}></div>  
+                            {/* <div ref={bottomRef}></div>   */}
                         </div>
                         <div className="flex items-center px-4">
                             <input type="text" value={messageVal} onKeyDown={handleKeyDown} onChange={(e) => setMessageVal(e.target.value)} className="bg-theme-gray-1 outline-0 px-8 p-4 text-font rounded-full w-full"  placeholder="Mesaj girin"/>

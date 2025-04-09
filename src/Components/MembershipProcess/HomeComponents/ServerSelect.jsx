@@ -40,11 +40,15 @@ const ServerSelect = ({serverSelectTriggerPar}) => {
 
     const router = useRouter();
     
-    const userMail = user?.email || ""; // Eğer user null ise, boş string ata
+    const userMail = user?.email || ""; 
 
     useEffect(() => {
-        getServer(); // Kullanıcı varsa sunucuları çek
-    }, [user, userData]); // user değiştiğinde çalıştır
+        getServer(); 
+    }, [user, userData]); 
+
+    useEffect(() => {
+        console.log("BEST USER", user)
+    }, [user])
 
     useEffect(() => {
         serverSelectTriggerPar(serverSelectTrigger)
@@ -112,6 +116,9 @@ const ServerSelect = ({serverSelectTriggerPar}) => {
             
             if(error){
                 console.log(error)
+            }
+            else{
+                setServerHave(true);
             }
         }
         catch(error){
@@ -197,7 +204,7 @@ const ServerSelect = ({serverSelectTriggerPar}) => {
           <div className="bg-theme-gray-2 h-screen w-full p-5">
                 <div className="flex justify-between items-center px-12">
                     <p className="title-font-bold text-4xl">Sunucu seç</p>
-                    <Image src={Close} alt="Close" onClick={() => setServerSelectTrigger(serverSelectTrigger + 1)}  className="w-[55px]"/>
+                    <Image src={Close} alt="Close" onClick={() => setServerSelectTrigger(serverSelectTrigger + 1)}  className={`w-[55px] ${!serverHave ? "hidden" : "block"}`}/>
                 </div>  
                 {loading ? <div className="flex w-full h-spec-screen-2 items-center justify-center"><Loading2 /></div> :  <div className="flex mt-12">
                     {serverHave ? 
@@ -241,7 +248,7 @@ const ServerSelect = ({serverSelectTriggerPar}) => {
                                                             <p className="text-lg text-xl text-font-bold">{server.serverName}</p>
                                                             <p>{server.serverDesc}</p>
                                                         </div>
-                                                        <button className="bg-theme-pink title-font-bold text-lg px-8 py-3 rounded-lg ms-auto outline-0" onClick={() => JoinServer(server.id,user.user.id)}>Katıl</button>
+                                                        <button className="bg-theme-pink title-font-bold text-lg px-8 py-3 rounded-lg ms-auto outline-0" onClick={() => JoinServer(server.id,user.id)}>Katıl</button>
                                                     </div>
                                                 </div>
                                             )

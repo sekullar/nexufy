@@ -4,6 +4,7 @@ import { useEffect, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from "@supabase/supabase-js";
 import { useUserContext } from '@/Context/UserContext';
+import { useInterfaceContext } from '@/Context/InterfaceContext';
 
 const CheckUser = () => {
     const router = useRouter();
@@ -19,6 +20,7 @@ const CheckUser = () => {
     }, [router]);
 
     const { user,setUser,setUserNew,setTemporaryMailRegister,setUserData} = useUserContext();
+    const { setGoogleId,setGoogleMail } = useInterfaceContext();
     console.log("auth", user);
     
     const getUserData = async () => {
@@ -33,7 +35,9 @@ const CheckUser = () => {
         const user = sessionData.session.user;
         console.log('Kullanıcı Bilgileri:', user);
         userControl(user.email)
-        setTemporaryMailRegister(user.email)
+        setTemporaryMailRegister(user.email);
+        setGoogleId(user.id)
+        setGoogleMail(user.email)
         getUserDataAll(user.email)
         setUser(user);
 
@@ -43,6 +47,8 @@ const CheckUser = () => {
             router.push('/Home');
         }
     }; 
+    
+    
 
     const getUserDataAll = async (mail) => {
         const {data,error} = await supabase
@@ -59,6 +65,8 @@ const CheckUser = () => {
             setUserData(data);
         }
     }
+
+  
 
 
     const userControl = async (email) => {
@@ -79,7 +87,7 @@ const CheckUser = () => {
                     setUserNew(false);
                 }
                 else{
-                    console.log("Bu kullanıcı hiç var olmadı")
+                    console.log("Bu kullanıcı hiç var olmadı");
                     setUserNew(true);
                 }
             }

@@ -12,6 +12,9 @@ export const InterfaceProvider = ({ children }) => {
     const [messageHistory,setMessageHistory] = useState([]); 
     const [articleLoading,setArticleLoading] = useState(false);
     const [lastSelectedTextChannel,setLastSelectedTextChannel] = useState("");
+    const [googleId,setGoogleId] = useState("");
+    const [googleMail,setGoogleMail] = useState("");
+    const [getBackUserNew,setGetBackUserNew] = useState(false);
 
 
     const context = {
@@ -26,7 +29,14 @@ export const InterfaceProvider = ({ children }) => {
         articleLoading,
         setArticleLoading,
         lastSelectedTextChannel,
-        setLastSelectedTextChannel
+        setLastSelectedTextChannel,
+        googleId,
+        setGoogleId,
+        getBackUserNew,
+        setGetBackUserNew,
+        googleMail,
+        setGoogleMail
+
     }
 
     return (
