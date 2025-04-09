@@ -138,20 +138,20 @@ const Login = ({ loginSendParam }) => {
                             <Image className="w-[130px]" src={Logo} alt="Nexora Logo" />
                             <p className="title-font-bold text-white mt-6 text-4xl">Tekrar hoşgeldin!</p>
                             <div className="flex flex-col gap-3 mt-6">
-                                <p className="text-font text-xl">E-Posta:</p>
+                                <p className="text-font text-xl text-white">E-Posta:</p>
                                 <input value={email} type="mail" onChange={(e) => setEmail(e.target.value)} className="bg-input p-2 px-4 rounded-xl outline-0" placeholder="E-Posta" />
                             </div>
                             <div className="flex flex-col gap-3 mt-6">
-                                <p className="text-font text-xl">Şifre:</p>
+                                <p className="text-font text-xl text-white">Şifre:</p>
                                 <input value={password} type="password" onChange={(e) => setPassword(e.target.value)} className="bg-input p-2 px-4 rounded-xl outline-0" placeholder="Şifre" />
                             </div>
                         </div>
                         <div className="flex flex-col">
                             <div className="flex items-center cursor-pointer justify-center gap-4 bg-input rounded-lg p-3 px-8 mb-4" onClick={() => googleLogin()}>
                                 <Image src={GoogleIcon} className="w-[25px]" alt="Google" />
-                                <p className="text-font-bold">Google ile giriş yap</p>
+                                <p className="text-font-bold text-white">Google ile giriş yap</p>
                             </div>
-                            <button className="bg-btn text-2xl rounded-lg text-font-bold py-4" onClick={() => loginUser()}>Giriş yap</button>
+                            <button className="bg-btn text-2xl rounded-lg text-font-bold py-4 text-white" onClick={() => loginUser()}>Giriş yap</button>
                             <div className="flex flex-col items-center mt-8 gap-3">
                                 <p href="#" className="text-theme-pink text-font-bold cursor-pointer" onClick={() => setLoginSend(false)}>Hesap Oluştur</p>
                                 <p href="#" className="text-theme-pink text-font-bold cursor-pointer">Giriş yaparken sorun mu yaşıyorsun?</p>
