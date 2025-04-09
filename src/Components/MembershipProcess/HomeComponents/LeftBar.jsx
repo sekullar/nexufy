@@ -142,7 +142,7 @@ const LeftBar = () => {
                                 <AccordionItem key={category.categoryName} aria-label={category.categoryName} className="transition-all text-lg text-font-bold duration-300 [&[data-state=open]_.icon]:rotate-180" title={category.categoryName}>
                                      <ul>
                                         {category.channels.map((channel) => (
-                                            <li key={channel.id} className="text-font text-base mt-2" onClick={() => startChat(serverData[0].id,channel.id)}>
+                                            <li key={channel.id} className="text-font text-base cursor-pointer mt-2" onClick={() => startChat(serverData[0].id,channel.id)}>
                                                 {channel.name}
                                             </li>
                                         ))}

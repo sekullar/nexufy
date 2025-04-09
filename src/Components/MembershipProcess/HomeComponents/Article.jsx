@@ -1,5 +1,5 @@
 import { useInterfaceContext } from "@/Context/InterfaceContext"
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Send from "../../../../public/icons/send.svg"
 import User from "../../../../public/icons/user.svg"
@@ -13,6 +13,8 @@ const Article = ({chatInner}) => {
     const supabaseKey = process.env.NEXT_PUBLIC_DBKEY;
              
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const bottomRef = useRef(null);
 
     const {serverData,articleValue,messageHistory,articleLoading,lastSelectedTextChannel} = useInterfaceContext();
     const {userData} = useUserContext();
@@ -45,6 +47,21 @@ const Article = ({chatInner}) => {
         }
     }
 
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, [messageHistory]); 
+
+      const handleKeyDown = (e) => {
+        if(e.key === "Enter"){
+            e.preventDefault();
+            if (!messageVal.trim()) return;
+            const currentMessage = messageVal;
+            setMessageVal("");
+            SendMessage(currentMessage, userData[0].id, serverData[0].id, lastSelectedTextChannel, userData[0].username);
+        }
+    }
+    
+
     return(
         <>
             {articleLoading ? 
@@ -62,7 +79,7 @@ const Article = ({chatInner}) => {
                 {articleValue == "chat" ? 
                 <>
                     <div className="flex flex-col justify-between w-full">
-                        <div className="h-spec-screen-3 p-5">
+                        <div className="h-spec-screen-3 p-5 overflow-auto">
                             {messageHistory && messageHistory.map((message,key) => {
                                 return(
                                     <div  key={key} className="flex gap-3 mb-7">
@@ -76,10 +93,11 @@ const Article = ({chatInner}) => {
                                     </div>
                                 )
                             })}
+                            <div ref={bottomRef}></div>  
                         </div>
                         <div className="flex items-center px-4">
-                            <input type="text" onChange={(e) => setMessageVal(e.target.value)} className="bg-theme-gray-1 outline-0 px-8 p-4 text-font rounded-full w-full" placeholder="Mesaj girin"/>
-                            <button className="bg-btn flex items-center justify-center h-[56px] w-[86px] rounded-lg ms-4" onClick={() => SendMessage(messageVal,userData[0].id,serverData[0].id,lastSelectedTextChannel,userData[0].username)}>
+                            <input type="text" value={messageVal} onKeyDown={handleKeyDown} onChange={(e) => setMessageVal(e.target.value)} className="bg-theme-gray-1 outline-0 px-8 p-4 text-font rounded-full w-full"  placeholder="Mesaj girin"/>
+                            <button className="bg-btn flex items-center justify-center h-[56px] w-[86px] rounded-lg ms-4" onClick={() => { if (!messageVal.trim()) return; const currentMessage = messageVal; setMessageVal(""); SendMessage(currentMessage, userData[0].id, serverData[0].id, lastSelectedTextChannel, userData[0].username);}}>
                                 <Image className="w-[35px]" src={Send} alt="Send button"/>
                             </button>
                         </div>
