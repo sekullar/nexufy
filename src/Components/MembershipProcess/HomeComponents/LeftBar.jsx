@@ -14,6 +14,7 @@ const LeftBar = () => {
     const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
     const supabaseKey = process.env.NEXT_PUBLIC_DBKEY;
     const supabase = createClient(supabaseUrl, supabaseKey);
+    
 
     const [messages, setMessages] = useState([]);
     const [sideBarActive, setSideBarActive] = useState(false);
@@ -22,6 +23,13 @@ const LeftBar = () => {
     const [channelData, setChannelData] = useState([]);
     const [createModal,setCreateModal] = useState(false);
     const [categoryData,setCategoryData] = useState([]);
+    const [closeInner,setCloseInner] = useState(0);
+
+    useEffect(() => {
+        if(closeInner != 0){
+            setCreateModal(false);
+        }
+    }, [closeInner])
 
     const getChannels = async (serverId) => {
         setLoading(true);
@@ -148,7 +156,7 @@ const LeftBar = () => {
 
     return (
         <>  
-            {createModal && <ModalAll process={"createProcessLeftBar"}/>}
+            <ModalAll processPar={"createProcessLeftBar"} openTrigger={createModal} closeTrigger={setCloseInner}/>
             <div className="flex h-spec-screen bg-theme-gray-1">
                 <div className="flex flex-col justify-between bg-theme-gray-1 h-spec-screen p-2">
                     <div className="flex flex-col gap-12 mt-12">
@@ -158,9 +166,9 @@ const LeftBar = () => {
                     </div>
                     <Image src={Settings} alt="Settings" className="w-[50px]" />
                 </div>
-                <div className={`bg-theme-gray-1 flex-col w-[300px] ${sideBarActive ? "flex" : "hidden"}`}>
+                <div className={`bg-theme-gray-1  flex-col w-[300px] ${sideBarActive ? "flex" : "hidden"}`}>
                     <div className="flex flex-col gap-3 p-4 accordion-start">
-                        <div className="flex justify-between border border-white opacity-70 px-3 py-1 rounded-xl">
+                        <div className="flex justify-between border border-white opacity-70 px-3 py-1 rounded-xl cursor-pointer" onClick={() => setCreateModal(!createModal)}>
                             <p className="text-white title-font">Oluştur</p>
                             <Image src={Plus} width={20} height={20} alt="Plus"/>
                         </div>

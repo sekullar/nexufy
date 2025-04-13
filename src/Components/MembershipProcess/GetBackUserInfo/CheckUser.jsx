@@ -38,13 +38,13 @@ const CheckUser = () => {
         setTemporaryMailRegister(user.email);
         setGoogleId(user.id)
         setGoogleMail(user.email)
-        getUserDataAll(user.email)
         setUser(user);
 
         if (user.email === 'sekusoftware@gmail.com') {
             router.push('/SekuSoftwareAdminPanel');
         } else {
-            router.push('/Home');
+            getUserDataAll(user.email)
+            console.log("pompa2")
         }
     }; 
     
@@ -63,6 +63,24 @@ const CheckUser = () => {
         else{
             console.log("Bütün kullanıcı dataları burada", data)
             setUserData(data);
+            router.push("/Home")
+        }
+    }
+
+    const getUserDataAll2 = async (mail) => {
+        const {data,error} = await supabase
+        .from("users")
+        .select("*")
+        .eq("email",mail)
+
+        if(error){
+            console.log(error);
+            logout();
+        }       
+        else{
+            console.log("Bütün kullanıcı dataları burada", data)
+            setUserData(data);
+            setUserNew(true);
         }
     }
 
@@ -88,7 +106,9 @@ const CheckUser = () => {
                 }
                 else{
                     console.log("Bu kullanıcı hiç var olmadı");
-                    setUserNew(true);
+                    getUserDataAll2(email);
+                    
+                    console.log("red yedin")
                 }
             }
         }

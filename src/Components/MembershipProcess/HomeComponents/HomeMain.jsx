@@ -68,6 +68,7 @@ const HomeMain = () => {
         console.log(userData)
         if(userData == "noAccess"){
             router.push("/")
+            console.log("pınar süt")
         }
         else{
             if(userData[0]?.lastSelectedServerId){
@@ -123,7 +124,7 @@ const HomeMain = () => {
                 {serverSelectModal ? <ServerSelect serverSelectTriggerPar={setTriggerInner}/> : 
                 <>
                     <Header triggerOuterHeader={setTriggetOuter}/>
-                    <div className="flex">
+                    <div className="flex h-full">
                         <LeftBar />
                         <Article />
                     </div>

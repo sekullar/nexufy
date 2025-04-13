@@ -15,7 +15,7 @@ const Header = ({triggerOuterHeader}) => {
 
     return(
         <>
-            <div className="flex justify-between items-center bg-theme-gray-1 p-2">
+            <div className="flex justify-between items-center bg-theme-gray-1 p-2 z-20">
                 <div className="flex items-center">
                     <Image src={Logo} alt="Logo" onClick={() => setTriggetOuterState(triggerOuterState + 1)} className="w-[50px]"/>
                     <div className="flex items-center ms-8 gap-4">
