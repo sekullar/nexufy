@@ -1,48 +1,93 @@
-import { useState } from 'react'
-import { initSocket, getSocket } from '@/lib/socket'
-import { createPeer } from '@/lib/peer'
+import { useState, useEffect, useRef } from 'react';
 
-export default function SoundChannelCard({ channelId, userId }) {
-  const [joined, setJoined] = useState(false)
+const WebRTC = () => {
+  const [isCallStarted, setIsCallStarted] = useState(false);
+  const [localStream, setLocalStream] = useState(null);
+  const [peerConnection, setPeerConnection] = useState(null);
+  const remoteAudioRef = useRef(null);
+  const localAudioRef = useRef(null);
 
-  const handleJoin = async () => {
-    if (joined) return
+  // STUN sunucusu
+  const iceServers = {
+    iceServers: [
+      {
+        urls: 'stun:stun.l.google.com:19302', // Google'ın STUN sunucusu
+      },
+    ],
+  };
 
-    const socket = initSocket()
+  // Kullanıcıdan ses almak
+  const startCall = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setLocalStream(stream);
 
-    const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      const peerConn = new RTCPeerConnection(iceServers);
+      stream.getTracks().forEach(track => peerConn.addTrack(track, stream));
 
-    const peer = createPeer(true, mediaStream, (signal) => {
-      socket.emit('signal', {
-        to: channelId, // burayı userId ile eşleyeceğiz sonra
-        from: userId,
-        signal,
-      })
-    }, (remoteStream) => {
-      const audio = document.createElement('audio')
-      audio.srcObject = remoteStream
-      audio.autoplay = true
-      document.body.appendChild(audio)
-    })
+      // Remote stream'i almak için
+      peerConn.ontrack = event => {
+        if (remoteAudioRef.current) {
+          remoteAudioRef.current.srcObject = event.streams[0];
+        }
+      };
 
-    socket.emit('join-room', channelId, userId)
+      // ICE Candidate'ları alıyoruz
+      peerConn.onicecandidate = event => {
+        if (event.candidate) {
+          console.log('New ICE candidate:', event.candidate);
+        }
+      };
 
-    socket.on('user-joined', (otherUserId) => {
-      console.log(`Yeni biri katıldı: ${otherUserId}`)
-      // karşı taraf peer açar (initiator: false)
-    })
+      const offer = await peerConn.createOffer();
+      await peerConn.setLocalDescription(offer);
 
-    socket.on('signal', ({ from, signal }) => {
-      console.log(`Signal alındı: ${from}`)
-      peer.signal(signal)
-    })
+      // Burada signaling işlemi yapman gerekiyor (Supabase veya WebSockets kullanabilirsin)
+      // Örneğin: signalingChannel.send(offer);
 
-    setJoined(true)
-  }
+      setPeerConnection(peerConn);
+
+      // Local stream'i oynat
+      if (localAudioRef.current) {
+        localAudioRef.current.srcObject = stream;
+      }
+
+      setIsCallStarted(true);
+    } catch (err) {
+      console.error('Kullanıcı medyasını alırken hata:', err);
+    }
+  };
+
+  const endCall = () => {
+    if (peerConnection) {
+      peerConnection.close();
+      setPeerConnection(null);
+    }
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+      setLocalStream(null);
+    }
+    setIsCallStarted(false);
+  };
 
   return (
-    <div onClick={handleJoin} className="cursor-pointer p-2 bg-gray-800 rounded">
-      {joined ? '🎤 Bağlısın' : '🔈 Bağlan'} - Kanal {channelId}
+    <div>
+      <h2>WebRTC Sesli Sohbet</h2>
+      {!isCallStarted ? (
+        <button onClick={startCall}>Aramaya Başla</button>
+      ) : (
+        <button onClick={endCall}>Aramayı Bitir</button>
+      )}
+      <div>
+        <h3>Yerel Ses</h3>
+        <audio ref={localAudioRef} autoPlay muted></audio>
+      </div>
+      <div>
+        <h3>Uzak Ses</h3>
+        <audio ref={remoteAudioRef} autoPlay></audio>
+      </div>
     </div>
-  )
-}
+  );
+};
+
+export default WebRTC;

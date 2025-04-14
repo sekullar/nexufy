@@ -7,6 +7,7 @@ import Loading2 from "@/Tools/Loading2";
 import { useUserContext } from "@/Context/UserContext";
 import { createClient } from "@supabase/supabase-js";
 import SoundChannelCard from "./SoundChannelCard";
+import GroupWebRTC from "./GroupWebRTC";
 
 const Article = ({chatInner}) => {
 
@@ -121,7 +122,7 @@ const Article = ({chatInner}) => {
                 </> : ""}
                 {articleValue == "sound" ? 
                 <>  
-                    {joinSound ? <SoundChannelCard /> : <div className="relative h-full flex justify-center items-center">
+                    {joinSound ? <GroupWebRTC /> : <div className="relative h-full flex justify-center items-center">
                         <div className="flex flex-col justify-center items-center">
                             <p className="title-font-bold text-4xl">Bu ses kanalında kimse yok!</p>
                             <p className="title-font text-xl mt-3">Bu ses kanalına katılarak bir sohbet başlatabilirsin!</p>
