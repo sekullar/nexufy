@@ -6,6 +6,7 @@ import User from "../../../../public/icons/user.svg"
 import Loading2 from "@/Tools/Loading2";
 import { useUserContext } from "@/Context/UserContext";
 import { createClient } from "@supabase/supabase-js";
+import SoundChannelCard from "./SoundChannelCard";
 
 const Article = ({chatInner}) => {
 
@@ -20,6 +21,7 @@ const Article = ({chatInner}) => {
     const {userData} = useUserContext();
 
     const [messageVal,setMessageVal] = useState("");
+    const [joinSound,setJoinSound] = useState(false);
 
     const divRef = useRef(null);
 
@@ -116,6 +118,22 @@ const Article = ({chatInner}) => {
                             </button>
                         </div>
                     </div>
+                </> : ""}
+                {articleValue == "sound" ? 
+                <>  
+                    {joinSound ? <SoundChannelCard /> : <div className="relative h-full flex justify-center items-center">
+                        <div className="flex flex-col justify-center items-center">
+                            <p className="title-font-bold text-4xl">Bu ses kanalında kimse yok!</p>
+                            <p className="title-font text-xl mt-3">Bu ses kanalına katılarak bir sohbet başlatabilirsin!</p>
+                        </div>
+                        <div className="absolute bottom-0 flex justify-center pb-8">
+                            <button className="bg-btn py-3 px-8 rounded-xl title-font-bold outline-0" onClick={() => setJoinSound(!joinSound)}>Katıl</button>
+                            <div className="flex justify-between px-4 py-3 rounded-xl">
+
+                            </div>
+                        </div>
+                    </div>}
+                    
                 </> : ""}
             </div> 
             }

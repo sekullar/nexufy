@@ -9,6 +9,7 @@ import { useInterfaceContext } from "@/Context/InterfaceContext"
 import { createClient } from "@supabase/supabase-js"
 import { Accordion, AccordionItem } from "@heroui/accordion"
 import ModalAll from "@/Tools/ModalAll"
+import Loading2 from "@/Tools/Loading2"
 
 const LeftBar = () => {
     const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
@@ -24,6 +25,8 @@ const LeftBar = () => {
     const [createModal,setCreateModal] = useState(false);
     const [categoryData,setCategoryData] = useState([]);
     const [closeInner,setCloseInner] = useState(0);
+    const [channelType,setChannelType] = useState("");
+    const [channelLoading,setChannelLoading] = useState(false);
 
     useEffect(() => {
         if(closeInner != 0){
@@ -31,7 +34,8 @@ const LeftBar = () => {
         }
     }, [closeInner])
 
-    const getChannels = async (serverId) => {
+    const getTextChannels = async (serverId) => {
+        setChannelLoading(true)
         setLoading(true);
         try {
             const { data: channels, error: channelError } = await supabase
@@ -84,7 +88,7 @@ const LeftBar = () => {
     
             console.log("formattedData:", formattedData);
             setChannelData(formattedData);
-    
+            setChannelLoading(false);
             setLoading(false);
         } catch (error) {
             console.log(error);
@@ -92,6 +96,67 @@ const LeftBar = () => {
         }
     };
     
+    const getSoundChannels = async (serverId) => {
+        setChannelLoading(true)
+        setLoading(true);
+        try {
+            const { data: channels, error: channelError } = await supabase
+                .from("sound_channels")
+                .select("*")
+                .eq("serverId", serverId);
+    
+            if (channelError) {
+                console.log(channelError);
+                setLoading(false);
+                return;
+            }
+    
+            const { data: categories, error: categoryError } = await supabase
+                .from("category")
+                .select("*")
+                .eq("serverId", serverId);
+    
+            if (categoryError) {
+                console.log(categoryError);
+                setLoading(false);
+                return;
+            }
+
+            const categoryMap = {};
+            categories.forEach(cat => {
+                categoryMap[String(cat.id)] = cat.categoryName;
+            });
+    
+            const grouped = {};
+            Object.values(categoryMap).forEach(categoryName => {
+                grouped[categoryName] = [];
+            });
+    
+            channels.forEach(channel => {
+                const key = String(channel.categoryId);
+                const categoryName = categoryMap[key] || "Bilinmeyen Kategori";
+    
+                if (!grouped[categoryName]) {
+                    grouped[categoryName] = [];
+                }
+    
+                grouped[categoryName].push(channel);
+            });
+    
+            const formattedData = Object.entries(grouped).map(([categoryName, channels]) => ({
+                categoryName,
+                channels
+            }));
+    
+            console.log("formattedData:", formattedData);
+            setChannelData(formattedData);
+            setChannelLoading(false)
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
+    };
 
     const fetchMessages = async (serverId, textChId) => {
         const { data, error } = await supabase
@@ -136,23 +201,52 @@ const LeftBar = () => {
     };
 
     const startChat = (serverId, textChId) => {
+        
         setLastSelectedTextChannel(textChId);
         setArticleLoading("true");
         setArticleValue("chat");
         fetchMessages(serverId, textChId);
     };
 
+    const startSoundChat = () => {
+        setArticleValue("sound")
+    }
+
+    const startCommunication = (serverId,textChId) => {
+        if(channelType == "text"){
+            startChat(serverId,textChId)
+        }
+        else if(channelType == "sound"){
+            startSoundChat();
+        }
+    }
+
     useEffect(() => {
         if (sideBarActive) {
-            getChannels(serverData[0].id);
+            if(channelType == "text"){
+                getTextChannels(serverData[0].id);
+            }
+            else if(channelType == "sound"){
+                getSoundChannels(serverData[0].id);
+            }
         }
-    }, [sideBarActive]);
+    }, [sideBarActive,channelType]);
 
     useEffect(() => {
         if (serverData.length > 0) {
             listenMessages(serverData[0].id, serverData[0].textChannelId);
         }
     }, [serverData]);
+
+    const clickLeftBar = (process) => {
+        if (channelType === process) {
+            setSideBarActive(!sideBarActive);
+        } else {
+            setChannelType(process);
+            setSideBarActive(true);
+        }
+    };
+    
 
     return (
         <>  
@@ -161,8 +255,8 @@ const LeftBar = () => {
                 <div className="flex flex-col justify-between bg-theme-gray-1 h-spec-screen p-2">
                     <div className="flex flex-col gap-12 mt-12">
                         <Image src={Annon} alt="Announcement" className="w-[50px]" />
-                        <Image src={Message} alt="Message" onClick={() => setSideBarActive(!sideBarActive)} className="w-[50px]" />
-                        <Image src={Sound} alt="Sound" className="w-[50px]" />
+                        <Image src={Message} alt="Message" onClick={() => clickLeftBar("text")} className="w-[50px]" />
+                        <Image src={Sound} alt="Sound" onClick={() => clickLeftBar("sound")} className="w-[50px]" />
                     </div>
                     <Image src={Settings} alt="Settings" className="w-[50px]" />
                 </div>
@@ -172,19 +266,25 @@ const LeftBar = () => {
                             <p className="text-white title-font">Oluştur</p>
                             <Image src={Plus} width={20} height={20} alt="Plus"/>
                         </div>
+                        {channelLoading ? 
+                        <>
+                        <div className="flex justify-center items-center h-full w-full">
+                            <Loading2 />
+                        </div>
+                        </>:
                         <Accordion selectionMode="multiple">
                             {channelData.map((category) => (
                                 <AccordionItem key={category.categoryName} aria-label={category.categoryName} className="transition-all text-lg text-font-bold duration-300 [&[data-state=open]_.icon]:rotate-180" title={category.categoryName}>
                                     <ul>
                                         {category.channels.map((channel) => (
-                                            <li key={channel.id} className="text-font text-base cursor-pointer mt-2" onClick={() => startChat(serverData[0].id, channel.id)}>
-                                                {channel.textChannelName}
+                                            <li key={channel.id} className="text-font text-base cursor-pointer mt-2" onClick={() => startCommunication(serverData[0].id, channel.id)}>
+                                                {channel.channelName}
                                             </li>
                                         ))}
                                     </ul>
                                 </AccordionItem>
                             ))}
-                        </Accordion>
+                        </Accordion>}
                     </div>
                 </div>
             </div>
