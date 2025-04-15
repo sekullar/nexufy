@@ -15,6 +15,7 @@ export const InterfaceProvider = ({ children }) => {
     const [googleId,setGoogleId] = useState("");
     const [googleMail,setGoogleMail] = useState("");
     const [getBackUserNew,setGetBackUserNew] = useState(false);
+    const [headerChannelName,setHeaderChannelName] = useState("");
 
 
     const context = {
@@ -35,7 +36,9 @@ export const InterfaceProvider = ({ children }) => {
         getBackUserNew,
         setGetBackUserNew,
         googleMail,
-        setGoogleMail
+        setGoogleMail,
+        headerChannelName,
+        setHeaderChannelName
 
     }
 
