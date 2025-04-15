@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 
-export default function Home({ innerTrigger }) {
+export default function Home({ }) {
   const socketRef = useRef();
   const peerRef = useRef();
   const localStreamRef = useRef();
 
-  const [startCallTrigger,setStartCallTrigger] = useState(0);
 
   useEffect(() => {
     setStartCallTrigger(innerTrigger)
@@ -87,13 +86,11 @@ export default function Home({ innerTrigger }) {
   };
 
   const startCall = async () => {
-    if(startCallTrigger != 0){
       await createPeer();
       const offer = await peerRef.current.createOffer();
       await peerRef.current.setLocalDescription(offer);
       socketRef.current.emit("offer", offer);
       setStartCallTrigger(0);
-    }
    
   };
 
