@@ -6,7 +6,6 @@ import User from "../../../../public/icons/user.svg"
 import Loading2 from "@/Tools/Loading2";
 import { useUserContext } from "@/Context/UserContext";
 import { createClient } from "@supabase/supabase-js";
-import SoundChannelCard from "./SoundChannelCard";
 import GroupWebRTC from "./GroupWebRTC";
 
 const Article = ({chatInner}) => {
