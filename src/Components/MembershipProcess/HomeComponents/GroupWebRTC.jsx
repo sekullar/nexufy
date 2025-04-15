@@ -5,9 +5,14 @@ export default function Home() {
   const [roomId, setRoomId] = useState("genel");
   const socketRef = useRef(null);
   const localStreamRef = useRef(null);
-  const peersRef = useRef({}); // Birden fazla peer olacak
+  const peersRef = useRef({}); // Birden fazla peer için
 
   const createPeer = (userId, initiator = false) => {
+    if (peersRef.current[userId]) {
+      console.log("⚠️ Zaten peer var:", userId);
+      return peersRef.current[userId];
+    }
+
     const peer = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
@@ -30,12 +35,19 @@ export default function Home() {
       document.body.appendChild(audio);
     };
 
+    peer.onconnectionstatechange = () => {
+      console.log("🔄 Conn state:", peer.connectionState);
+    };
+
+    peer.onsignalingstatechange = () => {
+      console.log("📶 Signaling state:", peer.signalingState);
+    };
+
     localStreamRef.current.getTracks().forEach((track) => {
       peer.addTrack(track, localStreamRef.current);
     });
 
     peersRef.current[userId] = peer;
-
     return peer;
   };
 
@@ -72,12 +84,20 @@ export default function Home() {
 
     socketRef.current.on("user-joined", async (userId) => {
       console.log("🧍 Yeni kullanıcı geldi:", userId);
-      createPeer(userId, false);
+      createPeer(userId, false); // bu kişi sana offer gönderecek
     });
 
     socketRef.current.on("offer", async ({ from, offer }) => {
       console.log("📨 Offer alındı:", from);
-      const peer = createPeer(from, false);
+
+      let peer = peersRef.current[from];
+      if (!peer) peer = createPeer(from, false);
+
+      if (peer.signalingState !== "stable") {
+        console.log("🛑 Peer zaten bağlantıda:", from);
+        return;
+      }
+
       await peer.setRemoteDescription(new RTCSessionDescription(offer));
       const answer = await peer.createAnswer();
       await peer.setLocalDescription(answer);
@@ -87,14 +107,22 @@ export default function Home() {
     socketRef.current.on("answer", async ({ from, answer }) => {
       console.log("📩 Answer geldi:", from);
       const peer = peersRef.current[from];
-      await peer.setRemoteDescription(new RTCSessionDescription(answer));
+      if (peer.signalingState === "have-local-offer") {
+        await peer.setRemoteDescription(new RTCSessionDescription(answer));
+      } else {
+        console.warn("⚠️ Geçersiz signalingState, answer uygulanamadı.");
+      }
     });
 
     socketRef.current.on("candidate", async ({ from, candidate }) => {
       console.log("🧊 ICE geldi:", from);
       const peer = peersRef.current[from];
       if (peer) {
-        await peer.addIceCandidate(new RTCIceCandidate(candidate));
+        try {
+          await peer.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (err) {
+          console.error("🚨 ICE candidate hatası:", err);
+        }
       }
     });
 
@@ -108,9 +136,14 @@ export default function Home() {
   };
 
   return (
-    <div>
-      <h1>🎙️ Oda: {roomId}</h1>
-      <button onClick={joinRoom}>🔊 Odaya Katıl</button>
+    <div className="flex flex-col justify-between items-center">
+      <h1 className="text-4xl title-font-bold">Oda: {roomId}</h1>
+      <button
+        className="p-2 mt-4 bg-blue-500 text-white rounded-lg"
+        onClick={joinRoom}
+      >
+        Odaya Katıl
+      </button>
     </div>
   );
 }
