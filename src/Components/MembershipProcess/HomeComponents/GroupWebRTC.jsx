@@ -47,6 +47,17 @@ export default function Home() {
       }
     };
 
+    peerRef.current.ontrack = (event) => {
+      const remoteStream = new MediaStream();
+      remoteStream.addTrack(event.track);
+    
+      const audioElement = new Audio();
+      audioElement.srcObject = remoteStream;
+      audioElement.autoplay = true;
+      audioElement.play();
+    };
+    
+
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
     localStreamRef.current = stream;
 
