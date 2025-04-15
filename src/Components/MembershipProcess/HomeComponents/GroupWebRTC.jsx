@@ -25,7 +25,6 @@ export default function Home({ innerTrigger }) {
 
     socketRef.current.on("offer", async (offer) => {
       console.log("🟡 Offer alındı:", offer);
-      if (peerRef.current) return peerRef.current;
       if (!peerRef.current) await createPeer();
 
       await peerRef.current.setRemoteDescription(new RTCSessionDescription(offer));
