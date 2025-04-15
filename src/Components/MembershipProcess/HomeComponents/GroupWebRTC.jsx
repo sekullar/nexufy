@@ -7,39 +7,48 @@ export default function Home() {
   const localStreamRef = useRef();
 
   useEffect(() => {
-    // Socket bağlantısı başlat
-    socketRef.current = io("https://nexufy.vercel.app", {  //değişken test localhost/nexufy.vercel.app
+    // ✅ Socket bağlantısı başlat
+    socketRef.current = io("https://nexufy.vercel.app", {
       path: "/api/signal",
     });
 
-    // Sunucuya bağlandığında log bas
     socketRef.current.on("connect", () => {
       console.log("✅ Socket'e bağlandı.");
     });
 
-    // Offer alındığında...
     socketRef.current.on("offer", async (offer) => {
+      console.log("🟡 Offer alındı:", offer);
       if (!peerRef.current) await createPeer();
 
-      await peerRef.current.setRemoteDescription(offer);
+      await peerRef.current.setRemoteDescription(new RTCSessionDescription(offer));
       const answer = await peerRef.current.createAnswer();
       await peerRef.current.setLocalDescription(answer);
       socketRef.current.emit("answer", answer);
     });
 
-    // Answer alındığında...
-    socketRef.current.on("answer", (answer) => {
-      peerRef.current.setRemoteDescription(answer);
+    socketRef.current.on("answer", async (answer) => {
+      console.log("🟢 Answer alındı:", answer);
+      if (peerRef.current) {
+        await peerRef.current.setRemoteDescription(new RTCSessionDescription(answer));
+      }
     });
 
-    // Candidate alındığında...
-    socketRef.current.on("candidate", (candidate) => {
-      peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+    socketRef.current.on("candidate", async (candidate) => {
+      console.log("❄️ Yeni ICE candidate alındı:", candidate);
+      if (peerRef.current) {
+        await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    });
+
+    socketRef.current.on("connect_error", (err) => {
+      console.error("❌ Socket bağlantı hatası:", err);
     });
   }, []);
 
   const createPeer = async () => {
-    peerRef.current = new RTCPeerConnection();
+    peerRef.current = new RTCPeerConnection({
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+    });
 
     peerRef.current.onicecandidate = (event) => {
       if (event.candidate) {
@@ -48,15 +57,19 @@ export default function Home() {
     };
 
     peerRef.current.ontrack = (event) => {
-      const remoteStream = new MediaStream();
-      remoteStream.addTrack(event.track);
-    
-      const audioElement = new Audio();
+      console.log("📡 Track alındı");
+
+      const remoteStream = event.streams[0];
+      const audioElement = document.createElement("audio");
       audioElement.srcObject = remoteStream;
       audioElement.autoplay = true;
-      audioElement.play();
+      audioElement.controls = true;
+      document.body.appendChild(audioElement);
     };
-    
+
+    peerRef.current.oniceconnectionstatechange = () => {
+      console.log("🔄 ICE Durumu:", peerRef.current.iceConnectionState);
+    };
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
     localStreamRef.current = stream;
@@ -68,7 +81,6 @@ export default function Home() {
 
   const startCall = async () => {
     await createPeer();
-
     const offer = await peerRef.current.createOffer();
     await peerRef.current.setLocalDescription(offer);
     socketRef.current.emit("offer", offer);
@@ -76,8 +88,8 @@ export default function Home() {
 
   return (
     <div>
-      <h1>WebRTC Sesli Sohbet</h1>
-      <button onClick={startCall}>Başla</button>
+      <h1>🎙️ WebRTC Sesli Sohbet</h1>
+      <button onClick={startCall}>🟢 Başla</button>
     </div>
   );
 }
