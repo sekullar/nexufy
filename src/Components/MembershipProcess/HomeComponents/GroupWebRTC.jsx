@@ -8,7 +8,7 @@ export default function Home() {
 
   useEffect(() => {
     // Socket bağlantısı başlat
-    socketRef.current = io("http://nexufy.vercel.app", {  //değişken test localhost/nexufy.vercel.app
+    socketRef.current = io("https://nexufy.vercel.app", {  //değişken test localhost/nexufy.vercel.app
       path: "/api/signal",
     });
 
