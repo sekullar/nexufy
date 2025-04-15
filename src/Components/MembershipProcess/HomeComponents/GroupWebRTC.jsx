@@ -7,10 +7,6 @@ export default function Home({ }) {
   const localStreamRef = useRef();
 
 
-  useEffect(() => {
-    setStartCallTrigger(innerTrigger)
-    startCall();
-  }, [startCallTrigger,innerTrigger])
 
   useEffect(() => {
     // ✅ Socket bağlantısı başlat
