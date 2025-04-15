@@ -1,10 +1,17 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 
-export default function Home() {
+export default function Home({ innerTrigger }) {
   const socketRef = useRef();
   const peerRef = useRef();
   const localStreamRef = useRef();
+
+  const [startCallTrigger,setStartCallTrigger] = useState(0);
+
+  useEffect(() => {
+    setStartCallTrigger(innerTrigger)
+    startCall();
+  }, [startCallTrigger,innerTrigger])
 
   useEffect(() => {
     // ✅ Socket bağlantısı başlat
@@ -18,6 +25,7 @@ export default function Home() {
 
     socketRef.current.on("offer", async (offer) => {
       console.log("🟡 Offer alındı:", offer);
+      if (peerRef.current) return peerRef.current;
       if (!peerRef.current) await createPeer();
 
       await peerRef.current.setRemoteDescription(new RTCSessionDescription(offer));
@@ -80,10 +88,14 @@ export default function Home() {
   };
 
   const startCall = async () => {
-    await createPeer();
-    const offer = await peerRef.current.createOffer();
-    await peerRef.current.setLocalDescription(offer);
-    socketRef.current.emit("offer", offer);
+    if(startCallTrigger != 0){
+      await createPeer();
+      const offer = await peerRef.current.createOffer();
+      await peerRef.current.setLocalDescription(offer);
+      socketRef.current.emit("offer", offer);
+      setStartCallTrigger(0);
+    }
+   
   };
 
   return (

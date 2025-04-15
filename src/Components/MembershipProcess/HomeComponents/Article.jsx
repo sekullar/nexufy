@@ -22,6 +22,7 @@ const Article = ({chatInner}) => {
 
     const [messageVal,setMessageVal] = useState("");
     const [joinSound,setJoinSound] = useState(false);
+    const [outerCall,setOuterCall] = useState(0);
 
     const divRef = useRef(null);
 
@@ -121,13 +122,13 @@ const Article = ({chatInner}) => {
                 </> : ""}
                 {articleValue == "sound" ? 
                 <>  
-                    {joinSound ? <GroupWebRTC /> : <div className="relative h-full flex justify-center items-center">
+                    {joinSound ? <GroupWebRTC innerTrigger={outerCall} /> : <div className="relative h-full flex justify-center items-center">
                         <div className="flex flex-col justify-center items-center">
                             <p className="title-font-bold text-4xl">Bu ses kanalında kimse yok!</p>
                             <p className="title-font text-xl mt-3">Bu ses kanalına katılarak bir sohbet başlatabilirsin!</p>
                         </div>
                         <div className="absolute bottom-0 flex justify-center pb-8">
-                            <button className="bg-btn py-3 px-8 rounded-xl title-font-bold outline-0" onClick={() => setJoinSound(!joinSound)}>Katıl</button>
+                            <button className="bg-btn py-3 px-8 rounded-xl title-font-bold outline-0" onClick={() => {setJoinSound(!joinSound); setOuterCall(outerCall + 1)}}>Katıl</button>
                             <div className="flex justify-between px-4 py-3 rounded-xl">
 
                             </div>
