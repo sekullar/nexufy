@@ -56,7 +56,6 @@ export default function Home() {
     });
 
     peersRef.current[userId] = peer;
-    setUserCallLoading(false);
     return peer;
   };
 
@@ -81,6 +80,7 @@ export default function Home() {
 
     socketRef.current.on("all-users", (users) => {
       console.log("📥 Odaya katılanlar:", users);
+      setUserCallLoading(false);
       users.forEach(async (userId) => {
         const peer = createPeer(userId, true);
         const offer = await peer.createOffer();
