@@ -143,7 +143,6 @@ export default function Home() {
   };
 
   const endCall = () => {
-    userCallConnected(false);
     Object.values(peersRef.current).forEach((peer) => {
       peer.close();
     });
@@ -163,6 +162,7 @@ export default function Home() {
       audio.pause();
       audio.remove();
     });
+    userCallConnected(false);
   
     console.log("📞 Çağrı sonlandırıldı pampa");
   };
