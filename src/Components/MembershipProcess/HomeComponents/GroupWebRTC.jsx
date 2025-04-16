@@ -2,12 +2,15 @@ import { useRef, useState, useEffect } from "react";
 import io from "socket.io-client";
 import Call from "../../../../public/icons/call.svg"
 import Image from "next/image";
+import { useInterfaceContext } from "@/Context/InterfaceContext";
 
 export default function Home() {
   const [roomId, setRoomId] = useState("genel");
   const socketRef = useRef(null);
   const localStreamRef = useRef(null);
   const peersRef = useRef({}); // Birden fazla peer için
+
+  const {roomIdGlobalForCall} = useInterfaceContext();
 
   const createPeer = (userId, initiator = false) => {
     if (peersRef.current[userId]) {
@@ -67,7 +70,7 @@ export default function Home() {
       });
       localStreamRef.current = stream;
 
-      socketRef.current.emit("join-room", roomId);
+      socketRef.current.emit("join-room", roomIdGlobalForCall);
     });
 
     socketRef.current.on("all-users", (users) => {
@@ -139,7 +142,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col justify-between h-full py-12 items-center">
-      <h1 className="text-4xl title-font-bold">Oda: {roomId}</h1>
+      <h1 className="text-4xl title-font-bold">Oda: {roomIdGlobalForCall}</h1>
       <button className="p-2 mt-4  text-white rounded-full bg-btn p-4 transition-all duration-300 hover:bg-btn-hover" onClick={joinRoom}>
         <Image src={Call}  alt="Call Button" onClick={() => setRoomId()} className="w-[35px]"/>
       </button>
