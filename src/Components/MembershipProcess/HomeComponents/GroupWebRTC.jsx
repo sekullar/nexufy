@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useInterfaceContext } from "@/Context/InterfaceContext";
 import EndCall from "../../../../public/icons/end-call.svg"
 import MicMute from "../../../../public/icons/microphonemute.svg"
+import Loading2 from "@/Tools/Loading2";
 
 export default function Home() {
   const [roomId, setRoomId] = useState("genel");
@@ -12,7 +13,7 @@ export default function Home() {
   const localStreamRef = useRef(null);
   const peersRef = useRef({}); // Birden fazla peer için
 
-  const {roomIdGlobalForCall,userCallConnected,setUserCallConnected} = useInterfaceContext();
+  const {roomIdGlobalForCall,userCallConnected,setUserCallConnected,userCallLoading,setUserCallLoading} = useInterfaceContext();
 
   const createPeer = (userId, initiator = false) => {
     if (peersRef.current[userId]) {
@@ -55,11 +56,13 @@ export default function Home() {
     });
 
     peersRef.current[userId] = peer;
+    setUserCallLoading(false);
     return peer;
   };
 
   const joinRoom = async () => {
     setUserCallConnected(true);
+    setUserCallLoading(true);
     socketRef.current = io("https://nexufy-socket-server.onrender.com", {
       path: "/api/signal",
     });
@@ -174,10 +177,11 @@ export default function Home() {
       <h1 className="text-4xl title-font-bold">Oda: {roomIdGlobalForCall}</h1>
       {userCallConnected ? 
       <>
-        <div className="bg-theme-gray-3 rounded-2xl p-3 ">
-          <button className="bg-theme-gray-2 rounded-full p-4 me-3"> <Image src={MicMute} className="w-[30px]" alt="Microphone Mute"/> </button>
-          <button className="bg-red-600 transition-all duration-300 hover:bg-red-700 rounded-full p-4" onClick={() => endCall()}> <Image src={EndCall} className="w-[30px]" alt="End Call"/> </button>
-        </div>
+        {userCallLoading ? <Loading2 /> : 
+         <div className="bg-theme-gray-3 rounded-2xl p-3 ">
+            <button className="bg-theme-gray-2 rounded-full p-4 me-3"> <Image src={MicMute} className="w-[30px]" alt="Microphone Mute"/> </button>
+            <button className="bg-red-600 transition-all duration-300 hover:bg-red-700 rounded-full p-4" onClick={() => endCall()}> <Image src={EndCall} className="w-[30px]" alt="End Call"/> </button>
+          </div>}
       </> : 
       <button className="p-2 mt-4  text-white rounded-full bg-btn p-4 transition-all duration-300 hover:bg-btn-hover" onClick={joinRoom}>
         <Image src={Call}  alt="Call Button" className="w-[35px]"/>

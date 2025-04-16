@@ -18,6 +18,7 @@ export const InterfaceProvider = ({ children }) => {
     const [headerChannelName,setHeaderChannelName] = useState("");
     const [roomIdGlobalForCall,setRoomIdGlobalForCall] = useState("");
     const [userCallConnected,setUserCallConnected] = useState(false);
+    const [userCallLoading,setUserCallLoading] = useState(false);
 
 
     const context = {
@@ -44,7 +45,9 @@ export const InterfaceProvider = ({ children }) => {
         roomIdGlobalForCall,
         setRoomIdGlobalForCall,
         userCallConnected,
-        setUserCallConnected
+        setUserCallConnected,
+        userCallLoading,
+        setUserCallLoading
     }
 
     return (
