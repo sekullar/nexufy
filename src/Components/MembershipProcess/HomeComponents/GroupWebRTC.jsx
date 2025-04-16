@@ -64,6 +64,7 @@ export default function Home() {
   };
 
   const joinRoom = async () => {
+    setNotificationTrigger(notificationTrigger + 1)
     setUserCallConnected(true);
     setNotificationMode("joinChannel")
     setUserCallLoading(true);
@@ -85,7 +86,6 @@ export default function Home() {
 
     socketRef.current.on("all-users", (users) => {
       console.log("📥 Odaya katılanlar:", users);
-      setNotificationTrigger(notificationTrigger + 1)
       setUserCallLoading(false);
       users.forEach(async (userId) => {
         const peer = createPeer(userId, true);
@@ -101,6 +101,7 @@ export default function Home() {
 
     socketRef.current.on("user-joined", async (userId) => {
       console.log("🧍 Yeni kullanıcı geldi:", userId);
+      setNotificationTrigger(notificationTrigger + 1)
       createPeer(userId, false);
     });
 
