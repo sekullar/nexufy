@@ -13,7 +13,10 @@ export default function Home() {
   const localStreamRef = useRef(null);
   const peersRef = useRef({}); // Birden fazla peer için
 
-  const {roomIdGlobalForCall,userCallConnected,setUserCallConnected,userCallLoading,setUserCallLoading} = useInterfaceContext();
+  const [notificationMode,setNotificationMode] = useState("");
+  const [notificationTrigger,setNotificationTrigger] = useState(0);
+
+  const {roomIdGlobalForCall,userCallConnected,setUserCallConnected,userCallLoading,setUserCallLoading,voiceRoomName} = useInterfaceContext();
 
   const createPeer = (userId, initiator = false) => {
     if (peersRef.current[userId]) {
@@ -61,6 +64,7 @@ export default function Home() {
 
   const joinRoom = async () => {
     setUserCallConnected(true);
+    setNotificationMode("joinChannel")
     setUserCallLoading(true);
     socketRef.current = io("https://nexufy-socket-server.onrender.com", {
       path: "/api/signal",
@@ -80,6 +84,7 @@ export default function Home() {
 
     socketRef.current.on("all-users", (users) => {
       console.log("📥 Odaya katılanlar:", users);
+      setNotificationTrigger(notificationTrigger + 1)
       setUserCallLoading(false);
       users.forEach(async (userId) => {
         const peer = createPeer(userId, true);
@@ -174,7 +179,8 @@ export default function Home() {
 
   return (
     <div className="flex flex-col justify-between h-full py-12 items-center">
-      <h1 className="text-4xl title-font-bold">Oda: {roomIdGlobalForCall}</h1>
+      <SoundPlayer trigger={notificationTrigger} mode={notificationMode}/>
+      <h1 className="text-4xl title-font-bold">Oda: {voiceRoomName}</h1>
       {userCallConnected ? 
       <>
         {userCallLoading ? <Loading2 /> : 

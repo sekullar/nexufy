@@ -19,6 +19,8 @@ export const InterfaceProvider = ({ children }) => {
     const [roomIdGlobalForCall,setRoomIdGlobalForCall] = useState("");
     const [userCallConnected,setUserCallConnected] = useState(false);
     const [userCallLoading,setUserCallLoading] = useState(false);
+    const [voiceRoomName,setVoiceRoomName] = useState("");
+
 
 
     const context = {
@@ -47,7 +49,9 @@ export const InterfaceProvider = ({ children }) => {
         userCallConnected,
         setUserCallConnected,
         userCallLoading,
-        setUserCallLoading
+        setUserCallLoading,
+        voiceRoomName,
+        setVoiceRoomName
     }
 
     return (

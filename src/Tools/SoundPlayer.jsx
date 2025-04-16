@@ -20,6 +20,11 @@ const SoundPlayer = ({mode,trigger}) => {
                 audio.volume = 1;
                 audio.play();
             }
+            else if(mode == "joinChannel"){
+                const audio = new Audio("/sounds/current/defaultJoinVoice.mp3");
+                audio.volume = 1;
+                audio.play();
+            }
         }
     }, [trigger])
 
