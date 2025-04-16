@@ -143,6 +143,7 @@ export default function Home() {
   };
 
   const endCall = () => {
+    userCallConnected(false);
     Object.values(peersRef.current).forEach((peer) => {
       peer.close();
     });
