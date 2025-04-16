@@ -12,7 +12,7 @@ export default function Home() {
   const localStreamRef = useRef(null);
   const peersRef = useRef({}); // Birden fazla peer için
 
-  const {roomIdGlobalForCall,userCallConnected} = useInterfaceContext();
+  const {roomIdGlobalForCall,userCallConnected,setUserCallConnected} = useInterfaceContext();
 
   const createPeer = (userId, initiator = false) => {
     if (peersRef.current[userId]) {
@@ -91,6 +91,7 @@ export default function Home() {
 
     socketRef.current.on("user-joined", async (userId) => {
       console.log("🧍 Yeni kullanıcı geldi:", userId);
+      setUserCallConnected(true);
       createPeer(userId, false);
     });
 
@@ -162,7 +163,7 @@ export default function Home() {
       audio.pause();
       audio.remove();
     });
-    userCallConnected(false);
+    setUserCallConnected(false);
   
     console.log("📞 Çağrı sonlandırıldı pampa");
   };
