@@ -12,6 +12,7 @@ module.exports = {
             'theme-gray-3': '#222222',
             'input': '#404040',
             'btn': '#9b59b6',
+            'btn-hover': '#7b4491',
             'theme-pink': '#9B59B6',
             "dark-transparent": "rgba(0, 0, 0, 0.37)"
         },

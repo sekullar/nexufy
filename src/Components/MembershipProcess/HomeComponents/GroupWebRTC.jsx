@@ -1,5 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import io from "socket.io-client";
+import Call from "../../../../public/icons/call.svg"
+import Image from "next/image";
 
 export default function Home() {
   const [roomId, setRoomId] = useState("genel");
@@ -136,13 +138,10 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col justify-between items-center">
+    <div className="flex flex-col justify-between h-full py-12 items-center">
       <h1 className="text-4xl title-font-bold">Oda: {roomId}</h1>
-      <button
-        className="p-2 mt-4 bg-blue-500 text-white rounded-lg"
-        onClick={joinRoom}
-      >
-        Odaya Katıl
+      <button className="p-2 mt-4  text-white rounded-full bg-btn p-4 transition-all duration-300 hover:bg-btn-hover" onClick={joinRoom}>
+        <Image src={Call}  alt="Call Button" className="   w-[35px]"/>
       </button>
     </div>
   );
