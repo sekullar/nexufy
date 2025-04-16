@@ -7,6 +7,7 @@ import EndCall from "../../../../public/icons/end-call.svg"
 import MicMute from "../../../../public/icons/microphonemute.svg"
 import Loading2 from "@/Tools/Loading2";
 import SoundPlayer from "@/Tools/SoundPlayer";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const [roomId, setRoomId] = useState("genel");
@@ -129,6 +130,8 @@ export default function Home() {
         await peer.setRemoteDescription(new RTCSessionDescription(answer));
       } else {
         console.warn("⚠️ Geçersiz signalingState, answer uygulanamadı.");
+        setNotificationMode("warn")
+        setNotificationTrigger(Date.now());
       }
     });
 
@@ -140,12 +143,17 @@ export default function Home() {
           await peer.addIceCandidate(new RTCIceCandidate(candidate));
         } catch (err) {
           console.error("🚨 ICE candidate hatası:", err);
+          toast.error("Buralarda bağlantı sorunları var. İnternetini kontrol et ve daha sonra tekrar dene")
+          setNotificationMode("error")
+          setNotificationTrigger(Date.now());
         }
       }
     });
 
     socketRef.current.on("user-left", (userId) => {
       console.log("👋 Kullanıcı ayrıldı:", userId);
+      setNotificationMode("leaveChannel")
+      setNotificationTrigger(Date.now());
       if (peersRef.current[userId]) {
         peersRef.current[userId].close();
         delete peersRef.current[userId];
@@ -154,6 +162,8 @@ export default function Home() {
   };
 
   const endCall = () => {
+    setNotificationMode("leaveChannel")
+    setNotificationTrigger(Date.now());
     Object.values(peersRef.current).forEach((peer) => {
       peer.close();
     });

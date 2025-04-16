@@ -25,6 +25,11 @@ const SoundPlayer = ({mode,trigger}) => {
                 audio.volume = 1;
                 audio.play();
             }
+            else if(mode == "leaveChannel"){
+                const audio = new Audio("/sounds/current/defaultLeaveVoice.mp3");
+                audio.volume = 1;
+                audio.play();
+            }
         }
     }, [trigger])
 
