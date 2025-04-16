@@ -59,6 +59,7 @@ export default function Home() {
   };
 
   const joinRoom = async () => {
+    setUserCallConnected(true);
     socketRef.current = io("https://nexufy-socket-server.onrender.com", {
       path: "/api/signal",
     });
@@ -91,7 +92,6 @@ export default function Home() {
 
     socketRef.current.on("user-joined", async (userId) => {
       console.log("🧍 Yeni kullanıcı geldi:", userId);
-      setUserCallConnected(true);
       createPeer(userId, false);
     });
 
