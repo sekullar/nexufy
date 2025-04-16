@@ -19,7 +19,7 @@ const LeftBar = () => {
 
     const [messages, setMessages] = useState([]);
     const [sideBarActive, setSideBarActive] = useState(false);
-    const { serverData, setArticleValue, setMessageHistory, setArticleLoading, setLastSelectedTextChannel,setHeaderChannelName} = useInterfaceContext();
+    const { serverData, setArticleValue, setMessageHistory, setArticleLoading, setLastSelectedTextChannel,setHeaderChannelName,setRoomIdGlobalForCall} = useInterfaceContext();
     const [loading, setLoading] = useState(false);
     const [channelData, setChannelData] = useState([]);
     const [createModal,setCreateModal] = useState(false);
@@ -277,7 +277,7 @@ const LeftBar = () => {
                                 <AccordionItem key={category.categoryName} aria-label={category.categoryName} className="transition-all text-lg text-font-bold duration-300 [&[data-state=open]_.icon]:rotate-180" title={category.categoryName}>
                                     <ul>
                                         {category.channels.map((channel) => (
-                                            <li key={channel.id} className="text-font text-base cursor-pointer mt-2" onClick={() => {startCommunication(serverData[0].id, channel.id); setHeaderChannelName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : "")}}>
+                                            <li key={channel.id} className="text-font text-base cursor-pointer mt-2" onClick={() => {startCommunication(serverData[0].id, channel.id); setHeaderChannelName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""); setRoomIdGlobalForCall(channel.id)}}>
                                                 {channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""}
                                             </li>
                                         ))}

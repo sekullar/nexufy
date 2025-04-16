@@ -141,7 +141,7 @@ export default function Home() {
     <div className="flex flex-col justify-between h-full py-12 items-center">
       <h1 className="text-4xl title-font-bold">Oda: {roomId}</h1>
       <button className="p-2 mt-4  text-white rounded-full bg-btn p-4 transition-all duration-300 hover:bg-btn-hover" onClick={joinRoom}>
-        <Image src={Call}  alt="Call Button" className="   w-[35px]"/>
+        <Image src={Call}  alt="Call Button" onClick={() => setRoomId()} className="w-[35px]"/>
       </button>
     </div>
   );

@@ -16,6 +16,7 @@ export const InterfaceProvider = ({ children }) => {
     const [googleMail,setGoogleMail] = useState("");
     const [getBackUserNew,setGetBackUserNew] = useState(false);
     const [headerChannelName,setHeaderChannelName] = useState("");
+    const [roomIdGlobalForCall,setRoomIdGlobalForCall] = useState("");
 
 
     const context = {
@@ -38,8 +39,9 @@ export const InterfaceProvider = ({ children }) => {
         googleMail,
         setGoogleMail,
         headerChannelName,
-        setHeaderChannelName
-
+        setHeaderChannelName,
+        roomIdGlobalForCall,
+        setRoomIdGlobalForCall
     }
 
     return (
