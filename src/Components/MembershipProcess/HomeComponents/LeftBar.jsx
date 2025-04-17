@@ -264,7 +264,7 @@ const LeftBar = () => {
         <>  
             <ModalAll processPar={"createProcessLeftBar"} openTrigger={createModal} closeTrigger={setCloseInner}/>
             <div className="flex h-spec-screen bg-theme-gray-1">
-                <div className="flex flex-col justify-between bg-theme-gray-1 h-spec-screen p-2">
+                <div className="flex flex-col justify-between bg-theme-gray-1 h-spec-screen p-2 w-[65px]">
                     <div className="flex flex-col gap-12 mt-12">
                         <Image src={Annon} alt="Announcement" className="w-[50px]" />
                         <Image src={Message} alt="Message" onClick={() => clickLeftBar("text")} className="w-[50px]" />
