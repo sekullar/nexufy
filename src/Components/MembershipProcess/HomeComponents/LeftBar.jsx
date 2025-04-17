@@ -10,6 +10,7 @@ import { createClient } from "@supabase/supabase-js"
 import { Accordion, AccordionItem } from "@heroui/accordion"
 import ModalAll from "@/Tools/ModalAll"
 import Loading2 from "@/Tools/Loading2"
+import Edit from "../../../../public/icons/edit3.svg"
 
 const LeftBar = () => {
     const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
@@ -19,7 +20,7 @@ const LeftBar = () => {
 
     const [messages, setMessages] = useState([]);
     const [sideBarActive, setSideBarActive] = useState(false);
-    const { serverData, setArticleValue, setMessageHistory, setArticleLoading, setLastSelectedTextChannel,setHeaderChannelName,setRoomIdGlobalForCall,setVoiceRoomName} = useInterfaceContext();
+    const {serverData, setArticleValue, setMessageHistory, setArticleLoading, setLastSelectedTextChannel,setHeaderChannelName,setRoomIdGlobalForCall,setVoiceRoomName,leftBarRefreshState} = useInterfaceContext();
     const [loading, setLoading] = useState(false);
     const [channelData, setChannelData] = useState([]);
     const [createModal,setCreateModal] = useState(false);
@@ -33,6 +34,17 @@ const LeftBar = () => {
             setCreateModal(false);
         }
     }, [closeInner])
+
+    useEffect(() => {
+        if(leftBarRefreshState != 0){
+            if(channelType == "text"){
+                getTextChannels(serverData[0].id)
+            }
+            else if(channelType == "sound"){
+                getSoundChannels(serverData[0].id);
+            }
+        }
+    }, [leftBarRefreshState])
 
     const getTextChannels = async (serverId) => {
         setChannelLoading(true)
@@ -260,7 +272,7 @@ const LeftBar = () => {
                     </div>
                     <Image src={Settings} alt="Settings" className="w-[50px]" />
                 </div>
-                <div className={`bg-theme-gray-1  flex-col w-[300px] ${sideBarActive ? "flex" : "hidden"}`}>
+                <div className={`bg-theme-gray-1  flex-col w-[350px] ${sideBarActive ? "flex" : "hidden"}`}>
                     <div className="flex flex-col gap-3 p-4 accordion-start">
                         <div className="flex justify-between border border-white opacity-70 px-3 py-1 rounded-xl cursor-pointer" onClick={() => setCreateModal(!createModal)}>
                             <p className="text-white title-font">Oluştur</p>
@@ -268,23 +280,66 @@ const LeftBar = () => {
                         </div>
                         {channelLoading ? 
                         <>
-                        <div className="flex justify-center items-center h-full w-full">
-                            <Loading2 />
-                        </div>
+                            <div className="flex justify-center items-center h-full w-full">
+                                <Loading2 />
+                            </div>
                         </>:
-                        <Accordion selectionMode="multiple">
-                            {channelData.map((category) => (
-                                <AccordionItem key={category.categoryName} aria-label={category.categoryName} className="transition-all text-lg text-font-bold duration-300 [&[data-state=open]_.icon]:rotate-180" title={category.categoryName}>
-                                    <ul>
-                                        {category.channels.map((channel) => (
-                                            <li key={channel.id} className="text-font text-base cursor-pointer mt-2" onClick={() => {startCommunication(serverData[0].id, channel.id); setHeaderChannelName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""); setRoomIdGlobalForCall(channel.id); setVoiceRoomName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : "")}}>
-                                                {channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </AccordionItem>
-                            ))}
-                        </Accordion>}
+                            <Accordion selectionMode="multiple">
+                                {channelData.map((category) => (
+                                    <AccordionItem 
+                                        key={category.categoryName} 
+                                        aria-label={category.categoryName} 
+                                        className="transition-all text-lg text-font-bold duration-300 [&[data-state=open]_.icon]:rotate-180"
+                                        title={
+                                            <div className="flex items-center justify-between group w-[230px]">
+                                                <span>{category.categoryName}</span>
+                                                <Image 
+                                                    src={Edit} 
+                                                    alt="Edit" 
+                                                    className="w-[19px] h-[19px] opacity-0 group-hover:opacity-100  transition-opacity duration-300 cursor-pointer"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); 
+                                                        console.log("Category Edit'e bastın aq! Kategori:", category.categoryName);
+                                                    }}
+                                                />
+                                            </div>
+                                        }
+                                        
+                                    >
+                                        <ul>
+                                            {category.channels.map((channel) => (
+                                                <li 
+                                                    key={channel.id} 
+                                                    className="group relative flex items-center justify-between text-font text-base cursor-pointer mt-2 px-2 py-1 hover:bg-theme-gray-3 rounded-md transition-all"
+                                                    onClick={() => {
+                                                        startCommunication(serverData[0].id, channel.id);
+                                                        setHeaderChannelName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : "");
+                                                        setRoomIdGlobalForCall(channel.id);
+                                                        setVoiceRoomName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : "");
+                                                    }}
+                                                >
+                                                    <span>
+                                                        {channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""}
+                                                    </span>
+                            
+                                                    {/* Kanal Edit Butonu */}
+                                                    <Image 
+                                                        src={Edit} 
+                                                        alt="Edit" 
+                                                        className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation(); 
+                                                            console.log("Kanal Edit'e bastın pampa! Kanal ID:", channel.id);
+                                                            // Kanal düzenleme modalı açarsın
+                                                        }}
+                                                    />
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        }
                     </div>
                 </div>
             </div>

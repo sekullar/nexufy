@@ -20,6 +20,7 @@ export const InterfaceProvider = ({ children }) => {
     const [userCallConnected,setUserCallConnected] = useState(false);
     const [userCallLoading,setUserCallLoading] = useState(false);
     const [voiceRoomName,setVoiceRoomName] = useState("");
+    const [leftBarRefreshState,setLeftBarRefreshState] = useState(0)
 
 
 
@@ -51,7 +52,9 @@ export const InterfaceProvider = ({ children }) => {
         userCallLoading,
         setUserCallLoading,
         voiceRoomName,
-        setVoiceRoomName
+        setVoiceRoomName,
+        leftBarRefreshState,
+        setLeftBarRefreshState
     }
 
     return (

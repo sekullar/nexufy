@@ -26,7 +26,7 @@ const ModalAll = ({ processPar, openTrigger, closeTrigger }) => {
     const [categoryName,setCategoryName] = useState("");
 
     const {userData} = useUserContext();
-    const {serverData} = useInterfaceContext();
+    const {serverData,setLeftBarRefreshState,leftBarRefreshState} = useInterfaceContext();
 
     const [notificationMode,setNotificationMode] = useState("");
     const [notificationTrigger,setNotificationTrigger] = useState(0);
@@ -69,6 +69,8 @@ const ModalAll = ({ processPar, openTrigger, closeTrigger }) => {
                     setNotificationMode("error");
                     setNotificationTrigger(notificationTrigger + 1)
                     toast.error("Kategori oluşturulurken bir hata oluştu!")
+                    setProcessState("createProcessLeftBar")
+
                 }
                 else{
                     console.log(data);
@@ -76,6 +78,8 @@ const ModalAll = ({ processPar, openTrigger, closeTrigger }) => {
                     toast.success("Başarıyla kategori oluşturdunuz!")
                     setCloseState(closeState + 1)
                     setCategoryName("");
+                    setLeftBarRefreshState(leftBarRefreshState + 1  )
+                    setProcessState("createProcessLeftBar")
                 }
             }
             catch(error){
@@ -85,7 +89,8 @@ const ModalAll = ({ processPar, openTrigger, closeTrigger }) => {
                     setLogsErrorSender(error);
                     setNotificationMode("error");
                     setNotificationTrigger(notificationTrigger + 1)
-                    toast.error("Kategori oluşturulurken bir hata oluştu!")
+                    toast.error("Kategori oluşturulurken bir hata oluştu!");
+                    setProcessState("createProcessLeftBar")
             }
         }
     }
