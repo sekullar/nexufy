@@ -26,14 +26,16 @@ const ModalAll = ({ processPar, openTrigger, closeTrigger }) => {
     const [categoryName,setCategoryName] = useState("");
 
     const {userData} = useUserContext();
-    const {serverData,setLeftBarRefreshState,leftBarRefreshState} = useInterfaceContext();
+    const {serverData,setLeftBarRefreshState,leftBarRefreshState,modalValueNames,modalValueTrigger,modalValueId} = useInterfaceContext();
 
     const [notificationMode,setNotificationMode] = useState("");
     const [notificationTrigger,setNotificationTrigger] = useState(0);
 
     const [processState,setProcessState] = useState("");
 
-    
+    useEffect(() => {
+        setCategoryName(modalValueNames)
+    }, [modalValueNames,modalValueTrigger])
     
     useEffect(() => {
         setProcessState(processPar)
@@ -95,8 +97,51 @@ const ModalAll = ({ processPar, openTrigger, closeTrigger }) => {
         }
     }
 
+    const updateCategory = async () => {
+        try{
+            const {data,error} = await supabase
+            .from("category")
+            .update({ categoryName: categoryName })
+            .eq("id",modalValueId)
+
+            if(error){
+                console.log(error); 
+            }
+            else{
+                setLeftBarRefreshState(leftBarRefreshState + 1)
+                toast.success("Kategori kaydedildi");
+                setCloseState(closeState + 1)
+            }
+        }
+        catch(error){
+            console.log(error);
+        }
+    } 
+
+    const deleteCategory = async () => {
+        try{
+            const {data,error} = await supabase
+            .from("category")
+            .delete()
+            .eq("id",modalValueId)
+
+            if(error){
+                console.log(error);
+            }
+            else{
+                toast.success("Kategori silindi")
+                setLeftBarRefreshState(leftBarRefreshState + 1)
+                setCloseState(closeState + 1)
+            }
+        }
+        catch(error){
+            console.log(error);
+
+        }
+    }
+
     return createPortal(
-        <div className="fixed inset-0 bg-dark-transparent flex justify-center items-center z-[9999]">
+        <div className="fixed inset-0 bg-dark-transparent flex justify-center items-center z-50">
             <SoundPlayer trigger={notificationTrigger} mode={notificationMode}/>
             <LogSender logs={logsErrorSender} mail={userData[0].email} category={"modal"} triggerOpen={logSenderTrigger}/>
             <div className="bg-theme-gray-2 p-4 rounded-xl flex flex-col">
@@ -121,6 +166,15 @@ const ModalAll = ({ processPar, openTrigger, closeTrigger }) => {
                         <p className="text-center title-font-bold text-2xl text-white">Bir kategori ismi girin</p>
                         <input type="text" value={categoryName} className="px-3 py-1 rounded-lg bg-input outline-0 mt-3" onChange={(e) => setCategoryName(e.target.value)} placeholder="Kategori ismi"/>
                         <button className="py-2 text-font bg-btn mt-3 rounded-lg" onClick={() => createCategory(serverData[0].id,categoryName)}>Oluştur</button>
+                    </>
+                )}
+                {processState === "categoryEdit" && (
+                    <>
+                        <div className="flex flex-col">
+                            <input type="text" value={categoryName} className="py-2 px-4 rounded-lg bg-theme-gray-3 outline-0 transition-all duration-300 focus:border-btn" onChange={(e) => setCategoryName(e.target.value)}/>
+                            <button className="bg-btn rounded-lg py-2 px-8 title-font-bold mt-5 outline-0" onClick={() => updateCategory()}>Kaydet</button>
+                            <button className="bg-red-600 hover:bg-red-700 tranistion-all duration-300 rounded-lg py-2 px-8 title-font-bold mt-3 outline-0" onClick={() => deleteCategory()}>Kategoriyi sil</button>
+                        </div>
                     </>
                 )}
             </div>

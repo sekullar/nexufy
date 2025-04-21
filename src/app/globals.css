@@ -288,3 +288,6 @@ body {
 }
  
  
+#check2 .accordion-start .px-2 [data-slot="base"] h2 [data-slot="trigger"] div {
+  width:100%
+}

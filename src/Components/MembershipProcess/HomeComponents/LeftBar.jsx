@@ -20,7 +20,7 @@ const LeftBar = () => {
 
     const [messages, setMessages] = useState([]);
     const [sideBarActive, setSideBarActive] = useState(false);
-    const {serverData, setArticleValue, setMessageHistory, setArticleLoading, setLastSelectedTextChannel,setHeaderChannelName,setRoomIdGlobalForCall,setVoiceRoomName,leftBarRefreshState} = useInterfaceContext();
+    const {serverData, setArticleValue, setMessageHistory, setArticleLoading, setLastSelectedTextChannel,setHeaderChannelName,setRoomIdGlobalForCall,setVoiceRoomName,leftBarRefreshState,setModalValueNames,setModalValueTrigger,setModalValueId} = useInterfaceContext();
     const [loading, setLoading] = useState(false);
     const [channelData, setChannelData] = useState([]);
     const [createModal,setCreateModal] = useState(false);
@@ -28,6 +28,7 @@ const LeftBar = () => {
     const [closeInner,setCloseInner] = useState(0);
     const [channelType,setChannelType] = useState("");
     const [channelLoading,setChannelLoading] = useState(false);
+    const [modalType,setModalType] = useState("createProcessLeftBar")
 
     useEffect(() => {
         if(closeInner != 0){
@@ -47,8 +48,9 @@ const LeftBar = () => {
     }, [leftBarRefreshState])
 
     const getTextChannels = async (serverId) => {
-        setChannelLoading(true)
+        setChannelLoading(true);
         setLoading(true);
+    
         try {
             const { data: channels, error: channelError } = await supabase
                 .from("text_channels")
@@ -71,42 +73,53 @@ const LeftBar = () => {
                 setLoading(false);
                 return;
             }
-
+    
             const categoryMap = {};
             categories.forEach(cat => {
-                categoryMap[String(cat.id)] = cat.categoryName;
+                categoryMap[String(cat.id)] = {
+                    id: cat.id,
+                    categoryName: cat.categoryName
+                };
             });
     
             const grouped = {};
-            Object.values(categoryMap).forEach(categoryName => {
-                grouped[categoryName] = [];
+    
+            Object.values(categoryMap).forEach(({ id, categoryName }) => {
+                grouped[id] = {
+                    id,
+                    categoryName,
+                    channels: []
+                };
             });
     
             channels.forEach(channel => {
                 const key = String(channel.categoryId);
-                const categoryName = categoryMap[key] || "Bilinmeyen Kategori";
+                const categoryInfo = categoryMap[key] || { id: null, categoryName: "Bilinmeyen Kategori" };
     
-                if (!grouped[categoryName]) {
-                    grouped[categoryName] = [];
+                if (!grouped[categoryInfo.id || "unknown"]) {
+                    grouped[categoryInfo.id || "unknown"] = {
+                        id: categoryInfo.id,
+                        categoryName: categoryInfo.categoryName,
+                        channels: []
+                    };
                 }
     
-                grouped[categoryName].push(channel);
+                grouped[categoryInfo.id || "unknown"].channels.push(channel);
             });
     
-            const formattedData = Object.entries(grouped).map(([categoryName, channels]) => ({
-                categoryName,
-                channels
-            }));
+            const formattedData = Object.values(grouped);
     
             console.log("formattedData:", formattedData);
             setChannelData(formattedData);
             setChannelLoading(false);
             setLoading(false);
+    
         } catch (error) {
             console.log(error);
             setLoading(false);
         }
     };
+    
     
     const getSoundChannels = async (serverId) => {
         setChannelLoading(true)
@@ -262,7 +275,8 @@ const LeftBar = () => {
 
     return (
         <>  
-            <ModalAll processPar={"createProcessLeftBar"} openTrigger={createModal} closeTrigger={setCloseInner}/>
+        <div id="check">
+            <ModalAll processPar={modalType} openTrigger={createModal} closeTrigger={setCloseInner}/>
             <div className="flex h-spec-screen bg-theme-gray-1">
                 <div className="flex flex-col justify-between bg-theme-gray-1 h-spec-screen p-2 w-[65px]">
                     <div className="flex flex-col gap-12 mt-12">
@@ -272,9 +286,9 @@ const LeftBar = () => {
                     </div>
                     <Image src={Settings} alt="Settings" className="w-[50px]" />
                 </div>
-                <div className={`bg-theme-gray-1  flex-col w-[350px] ${sideBarActive ? "flex" : "hidden"}`}>
+                <div id="check2" className={`bg-theme-gray-1  flex-col w-[350px] ${sideBarActive ? "flex" : "hidden"}`}>
                     <div className="flex flex-col gap-3 p-4 accordion-start">
-                        <div className="flex justify-between border border-white opacity-70 px-3 py-1 rounded-xl cursor-pointer" onClick={() => setCreateModal(!createModal)}>
+                        <div className="flex justify-between border border-white opacity-70 px-3 py-1 rounded-xl cursor-pointer" onClick={() => {setModalType("createProcessLeftBar"); setCreateModal(!createModal); }}>
                             <p className="text-white title-font">Oluştur</p>
                             <Image src={Plus} width={20} height={20} alt="Plus"/>
                         </div>
@@ -291,48 +305,21 @@ const LeftBar = () => {
                                         aria-label={category.categoryName} 
                                         className="transition-all text-lg text-font-bold duration-300 [&[data-state=open]_.icon]:rotate-180"
                                         title={
-                                            <div className="flex items-center justify-between group w-[230px]">
+                                            <div className="flex items-center justify-between group w-full">
                                                 <span>{category.categoryName}</span>
                                                 <Image 
                                                     src={Edit} 
                                                     alt="Edit" 
-                                                    className="w-[19px] h-[19px] opacity-0 group-hover:opacity-100  transition-opacity duration-300 cursor-pointer"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation(); 
-                                                        console.log("Category Edit'e bastın aq! Kategori:", category.categoryName);
-                                                    }}
-                                                />
-                                            </div>
-                                        }
-                                        
-                                    >
+                                                    className="w-[19px] h-[19px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                                                    onClick={(e) => {e.stopPropagation(); setModalValueNames(category.categoryName); setModalValueId(category.id); setModalValueTrigger(Date.now()); setModalType("categoryEdit"); setCreateModal(!createModal);}}/>
+                                            </div>}>
                                         <ul>
                                             {category.channels.map((channel) => (
-                                                <li 
-                                                    key={channel.id} 
-                                                    className="group relative flex items-center justify-between text-font text-base cursor-pointer mt-2 px-2 py-1 hover:bg-theme-gray-3 rounded-md transition-all"
-                                                    onClick={() => {
-                                                        startCommunication(serverData[0].id, channel.id);
-                                                        setHeaderChannelName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : "");
-                                                        setRoomIdGlobalForCall(channel.id);
-                                                        setVoiceRoomName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : "");
-                                                    }}
-                                                >
+                                                <li key={channel.id} className="group relative flex items-center justify-between text-font text-base cursor-pointer mt-2 px-2 py-1 hover:bg-theme-gray-3 rounded-md transition-all" onClick={() => {startCommunication(serverData[0].id, channel.id); setHeaderChannelName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""); setRoomIdGlobalForCall(channel.id); setVoiceRoomName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : "");}}>
                                                     <span>
                                                         {channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""}
                                                     </span>
-                            
-                                                    {/* Kanal Edit Butonu */}
-                                                    <Image 
-                                                        src={Edit} 
-                                                        alt="Edit" 
-                                                        className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation(); 
-                                                            console.log("Kanal Edit'e bastın pampa! Kanal ID:", channel.id);
-                                                            // Kanal düzenleme modalı açarsın
-                                                        }}
-                                                    />
+                                                    <Image src={Edit} alt="Edit"  className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer" onClick={(e) => {e.stopPropagation(); setModalType(channelType == "text" ? "textChannelEdit" : channelType == "sound" ? "soundChannelEdit" : ""); setCreateModal(!createModal);}}/>
                                                 </li>
                                             ))}
                                         </ul>
@@ -343,6 +330,8 @@ const LeftBar = () => {
                     </div>
                 </div>
             </div>
+        </div>
+            
         </>
     );
 };

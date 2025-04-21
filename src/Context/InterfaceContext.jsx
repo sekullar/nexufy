@@ -20,7 +20,12 @@ export const InterfaceProvider = ({ children }) => {
     const [userCallConnected,setUserCallConnected] = useState(false);
     const [userCallLoading,setUserCallLoading] = useState(false);
     const [voiceRoomName,setVoiceRoomName] = useState("");
-    const [leftBarRefreshState,setLeftBarRefreshState] = useState(0)
+    const [leftBarRefreshState,setLeftBarRefreshState] = useState(0);           // Ana menüde sol bardaki işlenen fonksiyonlar için kanal yenilemesi yapar
+    const [modalValueNames,setModalValueNames] = useState("");                  // Modalda düzenleme için isim taşıma
+    const [modalValueTrigger,setModalValueTrigger] = useState(0);               // Modalda düzenleme için tetikleme
+    const [modalValueId,setModalValueId] = useState("");                        // Modalda düzenleme için ID taşıma
+
+
 
 
 
@@ -54,7 +59,13 @@ export const InterfaceProvider = ({ children }) => {
         voiceRoomName,
         setVoiceRoomName,
         leftBarRefreshState,
-        setLeftBarRefreshState
+        setLeftBarRefreshState,
+        modalValueNames,
+        setModalValueNames,
+        modalValueTrigger,
+        setModalValueTrigger,
+        modalValueId,
+        setModalValueId
     }
 
     return (
