@@ -67,7 +67,16 @@ export default function Home() {
     peer.onconnectionstatechange = () => {
       console.log("🔄 Conn state:", peer.connectionState);
       if(peer.connectionState == "disconnected"){
+        setNotificationMode("leaveChannel")
         setNotificationTrigger(Date.now());
+      }
+      else if(peer.connectionState == "failed"){
+        setNotificationMode("leaveChannel")
+        setNotificationTrigger(Date.now());
+        toast.dismiss();
+        toast.dismiss();
+        toast.dismiss();
+        toast.error("İnternetle ilgili bir sorun oluştu, lütfen tekrar dener misin?")
       }
     };
 
@@ -121,6 +130,7 @@ export default function Home() {
 
     socketRef.current.on("user-joined", async (userId) => {
       console.log("🧍 Yeni kullanıcı geldi:", userId);
+      setNotificationMode("joinChannel")
       setNotificationTrigger(Date.now());
       createPeer(userId, false);
     });
