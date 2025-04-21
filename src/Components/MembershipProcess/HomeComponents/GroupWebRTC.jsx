@@ -8,6 +8,7 @@ import MicMute from "../../../../public/icons/microphonemute.svg"
 import Loading2 from "@/Tools/Loading2";
 import SoundPlayer from "@/Tools/SoundPlayer";
 import toast from "react-hot-toast";
+import { createClient } from "@supabase/supabase-js";
 
 export default function Home() {
   const [roomId, setRoomId] = useState("genel");
@@ -19,6 +20,21 @@ export default function Home() {
   const [notificationTrigger,setNotificationTrigger] = useState(0);
 
   const {roomIdGlobalForCall,userCallConnected,setUserCallConnected,userCallLoading,setUserCallLoading,voiceRoomName} = useInterfaceContext();
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
+  const supabaseKey = process.env.NEXT_PUBLIC_DBKEY;
+  
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const userJoinDb = async () => {
+    try{
+      const {data,error} = await supabase
+      .from("")
+    }
+    catch(error){
+
+    }
+  }
 
   const createPeer = (userId, initiator = false) => {
     if (peersRef.current[userId]) {
@@ -50,6 +66,9 @@ export default function Home() {
 
     peer.onconnectionstatechange = () => {
       console.log("🔄 Conn state:", peer.connectionState);
+      if(peer.connectionState == "disconnected"){
+        setNotificationTrigger(Date.now());
+      }
     };
 
     peer.onsignalingstatechange = () => {
@@ -65,9 +84,9 @@ export default function Home() {
   };
 
   const joinRoom = async () => {
+    setNotificationMode("joinChannel")
     setNotificationTrigger(Date.now());
     setUserCallConnected(true);
-    setNotificationMode("joinChannel")
     setUserCallLoading(true);
     socketRef.current = io("https://nexufy-socket-server.onrender.com", {
       path: "/api/signal",
