@@ -19,7 +19,7 @@ export default function Home() {
   const [notificationMode, setNotificationMode] = useState("");
   const [notificationTrigger, setNotificationTrigger] = useState(0);
 
-  const { roomIdGlobalForCall, userCallConnected, setUserCallConnected, userCallLoading, setUserCallLoading, voiceRoomName } = useInterfaceContext();
+  const { roomIdGlobalForCall, userCallConnected, setUserCallConnected, userCallLoading, setUserCallLoading, voiceRoomName,muteAll,setMuteAll} = useInterfaceContext();
 
   const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
   const supabaseKey = process.env.NEXT_PUBLIC_DBKEY;
@@ -32,6 +32,22 @@ export default function Home() {
         .from("")
     } catch (error) { }
   }
+
+  const toggleMute = () => {
+    if (localStreamRef.current) {
+      const audioTrack = localStreamRef.current.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled; 1
+        setMuteAll(!audioTrack.enabled); 
+        console.log("🎤 Mikrofon durumu değişti:", !audioTrack.enabled ? "Kapalı" : "Açık");
+      } else {
+        console.warn("🚨 Ses track'ı bulunamadı amk");
+      }
+    } else {
+      console.warn("🚨 Stream yok aq");
+    }
+  };
+  
 
   const createPeer = (userId, initiator = false) => {
     if (peersRef.current[userId]) {
@@ -238,7 +254,7 @@ export default function Home() {
       <>
         {userCallLoading ? <Loading2 /> : 
          <div className="bg-theme-gray-3 rounded-2xl p-3 ">
-            <button className="bg-theme-gray-2 rounded-full p-4 me-3"> <Image src={MicMute} className="w-[30px]" alt="Microphone Mute"/> </button>
+            <button className={`${muteAll ? "bg-white" : "bg-theme-gray-2"} transition-all duration-300  rounded-full p-4 me-3`} onClick={() => toggleMute()}> <Image src={MicMute} className={`w-[30px] transition-all duration-300 ${muteAll ? "invert" : "notMute"}`} alt="Microphone Mute"/> </button>
             <button className="bg-red-600 transition-all duration-300 hover:bg-red-700 rounded-full p-4" onClick={() => endCall()}> <Image src={EndCall} className="w-[30px]" alt="End Call"/> </button>
           </div>}
       </> : 
@@ -251,5 +267,3 @@ export default function Home() {
 
 
 
-
-// CALL IMAGE PUBLİC EDİLİM OFFLİNE'DA GÖZÜKECEK ŞEKİLDE AYARLANCAK OFFLİNE İÇİN OPTİMİZASYON YAPILACAK

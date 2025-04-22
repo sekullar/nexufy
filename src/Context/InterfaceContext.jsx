@@ -24,6 +24,7 @@ export const InterfaceProvider = ({ children }) => {
     const [modalValueNames,setModalValueNames] = useState("");                  // Modalda düzenleme için isim taşıma
     const [modalValueTrigger,setModalValueTrigger] = useState(0);               // Modalda düzenleme için tetikleme
     const [modalValueId,setModalValueId] = useState("");                        // Modalda düzenleme için ID taşıma
+    const [muteAll,setMuteAll] = useState(false);                               // Global mute 
 
 
 
@@ -65,7 +66,9 @@ export const InterfaceProvider = ({ children }) => {
         modalValueTrigger,
         setModalValueTrigger,
         modalValueId,
-        setModalValueId
+        setModalValueId,
+        muteAll,
+        setMuteAll
     }
 
     return (
