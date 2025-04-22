@@ -1,9 +1,9 @@
 {
-    "name": "Senin App'ın Adı",
-    "short_name": "AppAdı",
+    "name": "Nexufy",
+    "short_name": "Nexufy",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#ffffff",
+    "background_color": "#1e1e1e",
     "theme_color": "#000000",
     "icons": [
       {
