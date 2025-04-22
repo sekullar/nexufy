@@ -14,26 +14,23 @@ export default function Home() {
   const [roomId, setRoomId] = useState("genel");
   const socketRef = useRef(null);
   const localStreamRef = useRef(null);
-  const peersRef = useRef({}); // Birden fazla peer için
+  const peersRef = useRef({});
 
-  const [notificationMode,setNotificationMode] = useState("");
-  const [notificationTrigger,setNotificationTrigger] = useState(0);
+  const [notificationMode, setNotificationMode] = useState("");
+  const [notificationTrigger, setNotificationTrigger] = useState(0);
 
-  const {roomIdGlobalForCall,userCallConnected,setUserCallConnected,userCallLoading,setUserCallLoading,voiceRoomName} = useInterfaceContext();
+  const { roomIdGlobalForCall, userCallConnected, setUserCallConnected, userCallLoading, setUserCallLoading, voiceRoomName } = useInterfaceContext();
 
   const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
   const supabaseKey = process.env.NEXT_PUBLIC_DBKEY;
-  
+
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   const userJoinDb = async () => {
-    try{
-      const {data,error} = await supabase
-      .from("")
-    }
-    catch(error){
-
-    }
+    try {
+      const { data, error } = await supabase
+        .from("")
+    } catch (error) { }
   }
 
   const createPeer = (userId, initiator = false) => {
@@ -66,17 +63,9 @@ export default function Home() {
 
     peer.onconnectionstatechange = () => {
       console.log("🔄 Conn state:", peer.connectionState);
-      if(peer.connectionState == "disconnected"){
-        setNotificationMode("leaveChannel")
+      if (peer.connectionState == "disconnected" || peer.connectionState == "failed") {
+        setNotificationMode("leaveChannel");
         setNotificationTrigger(Date.now());
-      }
-      else if(peer.connectionState == "failed"){
-        setNotificationMode("leaveChannel")
-        setNotificationTrigger(Date.now());
-        toast.dismiss();
-        toast.dismiss();
-        toast.dismiss();
-        toast.error("İnternetle ilgili bir sorun oluştu, lütfen tekrar dener misin?")
       }
     };
 
@@ -197,26 +186,49 @@ export default function Home() {
       peer.close();
     });
     peersRef.current = {};
-  
+
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => track.stop());
       localStreamRef.current = null;
     }
-  
+
     if (socketRef.current) {
       socketRef.current.disconnect();
       socketRef.current = null;
     }
-  
+
     document.querySelectorAll("audio").forEach((audio) => {
       audio.pause();
       audio.remove();
     });
     setUserCallConnected(false);
-  
+
     console.log("📞 Çağrı sonlandırıldı pampa");
   };
-  
+
+  useEffect(() => {
+    const handleOffline = () => {
+      console.log("🌐 İnternet bağlantısı kayboldu.");
+      setNotificationMode("warn");
+      setNotificationTrigger(Date.now());
+      endCall();
+    };
+
+    const handleOnline = () => {
+      console.log("🌐 İnternet bağlantısı geri geldi.");
+      setNotificationMode("reconnect");
+      setNotificationTrigger(Date.now());
+      joinRoom();
+    };
+
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col justify-between h-full py-12 items-center">
@@ -236,3 +248,8 @@ export default function Home() {
     </div>
   );
 }
+
+
+
+
+// CALL IMAGE PUBLİC EDİLİM OFFLİNE'DA GÖZÜKECEK ŞEKİLDE AYARLANCAK OFFLİNE İÇİN OPTİMİZASYON YAPILACAK
