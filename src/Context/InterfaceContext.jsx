@@ -16,15 +16,17 @@ export const InterfaceProvider = ({ children }) => {
     const [googleMail,setGoogleMail] = useState("");
     const [getBackUserNew,setGetBackUserNew] = useState(false);
     const [headerChannelName,setHeaderChannelName] = useState("");
-    const [roomIdGlobalForCall,setRoomIdGlobalForCall] = useState("");
+    const [roomIdGlobalForCall,setRoomIdGlobalForCall] = useState("");                                  // Son bağlanılan ses kanalını ID baz alır, anlık ID çekebilir. Left bar tetikler.
     const [userCallConnected,setUserCallConnected] = useState(false);
     const [userCallLoading,setUserCallLoading] = useState(false);
-    const [voiceRoomName,setVoiceRoomName] = useState("");
-    const [leftBarRefreshState,setLeftBarRefreshState] = useState(0);           // Ana menüde sol bardaki işlenen fonksiyonlar için kanal yenilemesi yapar
-    const [modalValueNames,setModalValueNames] = useState("");                  // Modalda düzenleme için isim taşıma
-    const [modalValueTrigger,setModalValueTrigger] = useState(0);               // Modalda düzenleme için tetikleme
-    const [modalValueId,setModalValueId] = useState("");                        // Modalda düzenleme için ID taşıma
-    const [muteAll,setMuteAll] = useState(false);                               // Global mute 
+    const [voiceRoomName,setVoiceRoomName] = useState("");                                                              
+    const [leftBarRefreshState,setLeftBarRefreshState] = useState(0);                                   // Ana menüde sol bardaki işlenen fonksiyonlar için kanal yenilemesi yapar
+    const [modalValueNames,setModalValueNames] = useState("");                                          // Modalda düzenleme için isim taşıma
+    const [modalValueTrigger,setModalValueTrigger] = useState(0);                                       // Modalda düzenleme için tetikleme
+    const [modalValueId,setModalValueId] = useState("");                                                // Modalda düzenleme için ID taşıma
+    const [muteAll,setMuteAll] = useState(false);                                                       // Global mute 
+    const [deafenAll,setDeafenAll] = useState(false);                                                   // Global deafen
+    const [leftBarTrigger,setLeftBarTrigger] = useState(0)                  // Soldaki menüye tıklandığında tetikleme başlatır
 
 
 
@@ -68,7 +70,11 @@ export const InterfaceProvider = ({ children }) => {
         modalValueId,
         setModalValueId,
         muteAll,
-        setMuteAll
+        setMuteAll,
+        deafenAll,
+        setDeafenAll,
+        leftBarTrigger,
+        setLeftBarTrigger
     }
 
     return (

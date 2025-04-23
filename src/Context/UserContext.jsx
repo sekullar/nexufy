@@ -5,10 +5,10 @@ import { createContext, useContext, useState } from 'react';
 const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null);                                           // Kullanıcının Google giriş bilgileri
     const [userNew, setUserNew] = useState(null);
     const [temporaryMailRegister,setTemporaryMailRegister] = useState(null);
-    const [userData, setUserData] = useState("noAccess");
+    const [userData, setUserData] = useState("noAccess");                             // Kullanıcının veritabanındaki bilgileri
 
 
     const context = {

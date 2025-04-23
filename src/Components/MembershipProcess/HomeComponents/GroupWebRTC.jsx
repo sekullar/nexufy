@@ -9,6 +9,7 @@ import Loading2 from "@/Tools/Loading2";
 import SoundPlayer from "@/Tools/SoundPlayer";
 import toast from "react-hot-toast";
 import { createClient } from "@supabase/supabase-js";
+import { useUserContext } from "@/Context/UserContext";
 
 export default function Home() {
   const [roomId, setRoomId] = useState("genel");
@@ -18,8 +19,10 @@ export default function Home() {
 
   const [notificationMode, setNotificationMode] = useState("");
   const [notificationTrigger, setNotificationTrigger] = useState(0);
+  const [members,setMembers] = useState("noValue");
 
-  const { roomIdGlobalForCall, userCallConnected, setUserCallConnected, userCallLoading, setUserCallLoading, voiceRoomName,muteAll,setMuteAll} = useInterfaceContext();
+  const { roomIdGlobalForCall, userCallConnected, setUserCallConnected, userCallLoading, setUserCallLoading, voiceRoomName,muteAll,setMuteAll,deafenAll,setDeafenAll,serverData,leftBarTrigger} = useInterfaceContext();
+  const {user,userData} = useUserContext();
 
   const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
   const supabaseKey = process.env.NEXT_PUBLIC_DBKEY;
@@ -29,8 +32,94 @@ export default function Home() {
   const userJoinDb = async () => {
     try {
       const { data, error } = await supabase
-        .from("")
-    } catch (error) { }
+        .from("soundChannelInfo")
+        .insert([{
+          userId: user.id,
+          username: userData[0].username,
+          is_mute: muteAll,
+          is_deafen: deafenAll,
+          joinSoundChannelId: roomIdGlobalForCall,
+          serverId: serverData[0].id,
+          socket_id: socketRef.current.id
+        }])
+
+        if(error){
+          console.log(error);
+          return;
+        }
+        
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
+
+  const getUsersOnChannel = async () => {
+    try{
+      const {data,error} = await supabase
+      .from("soundChannelInfo")
+      .select("*")
+      .match({
+        joinSoundChannelId:roomIdGlobalForCall,
+        serverId: serverData[0].id
+      })
+      
+      if(error){
+        console.log(error);
+      }
+      else{
+        setMembers(data);
+        liveGetUsersOnChannel();
+      }
+    }
+    catch(error){
+      console.log(error)
+    }
+    
+  }
+
+  useEffect(() => {
+    if(leftBarTrigger != 0){
+      getUsersOnChannel();
+    }
+  }, [leftBarTrigger])
+
+  useEffect(() => {
+    console.log(members)
+  }, [members])
+
+  const liveGetUsersOnChannel = async () => {
+    try{
+      const channel = supabase
+      .channel('realtime:soundChannelInfo')
+      
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'soundChannelInfo' }, (payload) => {
+        console.log('Yeni katılan:', payload.new);
+        
+        if (
+          payload.new.joinSoundChannelId === roomIdGlobalForCall &&
+          payload.new.serverId === serverData[0].id
+        ) {
+          setMembers((prev) => [...prev, payload.new]);
+        }
+      })
+
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'soundChannelInfo' }, (payload) => {
+        console.log('Kanalı terkeden:', payload.old);
+
+        if (
+          payload.old.joinSoundChannelId === roomIdGlobalForCall &&
+          payload.old.serverId === serverData[0].id
+        ) {
+          setMembers((prev) => prev.filter((user) => user.id !== payload.old.id));
+        }
+      })
+
+      .subscribe();
+    }
+    catch(error){
+      console.log(error);
+    }
   }
 
   const toggleMute = () => {
@@ -106,16 +195,33 @@ export default function Home() {
       path: "/api/signal",
     });
 
+
     socketRef.current.on("connect", async () => {
       console.log("✅ Socket'e bağlandı");
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: false,
-      });
-      localStreamRef.current = stream;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+          video: false,
+        });
+        localStreamRef.current = stream;
+        
+        if (muteAll) {
+          const audioTrack = localStreamRef.current.getAudioTracks()[0];
+          if (audioTrack) {
+            audioTrack.enabled = false;
+            console.log("🎤 Mikrofon baştan kapalı başlatıldı çünkü muteAll aktifti pampa.");
+          }
+        }
+    
+        socketRef.current.emit("join-room", roomIdGlobalForCall);
 
-      socketRef.current.emit("join-room", roomIdGlobalForCall);
+        await userJoinDb();
+    
+      } catch (err) {
+        console.error("❌ Media device hatası oldu aq:", err);
+        toast.error("Mikrofon iznini alamıyoruz, mikrofona izin vermemiş olabilirsin.")
+      }
     });
 
     socketRef.current.on("all-users", (users) => {
@@ -132,6 +238,14 @@ export default function Home() {
         });
       });
     });
+    
+    if (muteAll) {
+      const audioTrack = stream.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = false;
+        console.log("🎤 Mikrofon baştan kapalı başlatıldı çünkü muteAll aktifti pampa.");
+      }
+    }
 
     socketRef.current.on("user-joined", async (userId) => {
       console.log("🧍 Yeni kullanıcı geldi:", userId);
@@ -250,6 +364,7 @@ export default function Home() {
     <div className="flex flex-col justify-between h-full py-12 items-center">
       <SoundPlayer trigger={notificationTrigger} mode={notificationMode}/>
       <h1 className="text-4xl title-font-bold">Oda: {voiceRoomName}</h1>
+
       {userCallConnected ? 
       <>
         {userCallLoading ? <Loading2 /> : 
@@ -264,6 +379,15 @@ export default function Home() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+// SES KANALINA KATILANLARI GÖREBİLİYORUZ LİSTELEMİYORUZ REALTİME GÖRME VE ÖNCEKİLERİ GÖRME KOYACAĞIZ
 
 
 
