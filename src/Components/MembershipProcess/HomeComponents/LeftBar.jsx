@@ -315,7 +315,7 @@ const LeftBar = () => {
                                             </div>}>
                                         <ul>
                                             {category.channels.map((channel) => (
-                                                <li key={channel.id} className="group relative flex items-center justify-between text-font text-base cursor-pointer mt-2 px-2 py-1 hover:bg-theme-gray-3 rounded-md transition-all" onClick={() => {startCommunication(serverData[0].id, channel.id); setHeaderChannelName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""); setRoomIdGlobalForCall(channel.id); setVoiceRoomName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""); setLeftBarTrigger(Date.now());}}>
+                                                <li key={channel.id} className="group relative flex items-center justify-between text-font text-base cursor-pointer mt-2 px-2 py-1 hover:bg-theme-gray-3 rounded-md transition-all" onClick={() => {startCommunication(serverData[0].id, channel.id); setHeaderChannelName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""); setRoomIdGlobalForCall(channel.id); setVoiceRoomName(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""); setLeftBarTrigger(Date.now()); leftBarSoundChannelTrigger(Date.now());}}>
                                                     <span>
                                                         {channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""}
                                                     </span>
