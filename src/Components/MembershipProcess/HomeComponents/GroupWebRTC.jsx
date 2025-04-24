@@ -21,7 +21,7 @@ export default function Home() {
   const [notificationTrigger, setNotificationTrigger] = useState(0);
   const [members,setMembers] = useState("noValue");
 
-  const { roomIdGlobalForCall, userCallConnected, setUserCallConnected, userCallLoading, setUserCallLoading, voiceRoomName,muteAll,setMuteAll,deafenAll,setDeafenAll,serverData,leftBarTrigger} = useInterfaceContext();
+  const { roomIdGlobalForCall, userCallConnected, setUserCallConnected, userCallLoading, setUserCallLoading, voiceRoomName,muteAll,setMuteAll,deafenAll,setDeafenAll,serverData,leftBarTrigger,leftBarSoundChannelTrigger} = useInterfaceContext();
   const {user,userData} = useUserContext();
 
   const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
@@ -88,39 +88,82 @@ export default function Home() {
     console.log(members)
   }, [members])
 
+  const channelRef = useRef(null); // dinleme kanalını saklamak için
+
+  useEffect(() => {
+    if (leftBarSoundChannelTrigger !== 0) {
+      liveGetUsersOnChannel();
+    }
+  
+    // component unmount olursa kanalı da sil
+    return () => {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        console.log("Kanal dinlemesi bırakıldı.")
+        channelRef.current = null;
+      }
+    };
+  }, [leftBarSoundChannelTrigger]);
+  
   const liveGetUsersOnChannel = async () => {
-    try{
-      const channel = supabase
-      .channel('realtime:soundChannelInfo')
-      
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'soundChannelInfo' }, (payload) => {
-        console.log('Yeni katılan:', payload.new);
-        
-        if (
-          payload.new.joinSoundChannelId === roomIdGlobalForCall &&
-          payload.new.serverId === serverData[0].id
-        ) {
-          setMembers((prev) => [...prev, payload.new]);
-        }
-      })
+    console.log("Kanal Dinleniyor...")
+    try {
+      // Kanal dinlemeyi temizle (önceki varsa)
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+  
+      // 🔥 Önce geçmiş verileri çek
+      const { data, error } = await supabase
+        .from('soundChannelInfo')
+        .select('*')
+        .match({
+          joinSoundChannelId: roomIdGlobalForCall,
+          serverId: serverData[0].id,
+        });
+  
+      if (error) {
+        console.error('Fetch error:', error);
+      } else {
+        setMembers(data);
+      }
+  
+      // 🔥 Şimdi realtime kanal kur
+      const newChannel = supabase
+        .channel(`realtime:soundChannelInfo:${roomIdGlobalForCall}`)
+  
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'soundChannelInfo' }, (payload) => {
+          console.log('Yeni katılan:', payload.new);
+  
+          if (
+            payload.new.joinSoundChannelId === roomIdGlobalForCall &&
+            payload.new.serverId === serverData[0].id
+          ) {
+            setMembers((prev) => [...prev, payload.new]);
+          }
+        })
+  
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'soundChannelInfo' }, (payload) => {
+          console.log('Kanalı terkeden:', payload.old);
+  
+          if (
+            payload.old.joinSoundChannelId === roomIdGlobalForCall &&
+            payload.old.serverId === serverData[0].id
+          ) {
+            setMembers((prev) => prev.filter((user) => user.id !== payload.old.id));
+          }
+        })
+  
+        .subscribe();
+  
+      // 🔧 Kanalı ref’e ata ki bir daha erişebilelim
 
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'soundChannelInfo' }, (payload) => {
-        console.log('Kanalı terkeden:', payload.old);
-
-        if (
-          payload.old.joinSoundChannelId === roomIdGlobalForCall &&
-          payload.old.serverId === serverData[0].id
-        ) {
-          setMembers((prev) => prev.filter((user) => user.id !== payload.old.id));
-        }
-      })
-
-      .subscribe();
+      channelRef.current = newChannel;
+    } catch (error) {
+      console.log('Realtime hatası:', error);
     }
-    catch(error){
-      console.log(error);
-    }
-  }
+  };
 
   const toggleMute = () => {
     if (localStreamRef.current) {

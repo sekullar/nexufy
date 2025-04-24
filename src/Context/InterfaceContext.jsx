@@ -26,7 +26,8 @@ export const InterfaceProvider = ({ children }) => {
     const [modalValueId,setModalValueId] = useState("");                                                // Modalda düzenleme için ID taşıma
     const [muteAll,setMuteAll] = useState(false);                                                       // Global mute 
     const [deafenAll,setDeafenAll] = useState(false);                                                   // Global deafen
-    const [leftBarTrigger,setLeftBarTrigger] = useState(0)                  // Soldaki menüye tıklandığında tetikleme başlatır
+    const [leftBarTrigger,setLeftBarTrigger] = useState(0)                                              // Soldaki menüye tıklandığında tetikleme başlatır
+    const [leftBarSoundChannelTrigger,setLeftBarSoundChannelTrigger] = useState(0)                      // Soldaki menüye, tıklandığında ses tetiklemesi
 
 
 
@@ -74,7 +75,10 @@ export const InterfaceProvider = ({ children }) => {
         deafenAll,
         setDeafenAll,
         leftBarTrigger,
-        setLeftBarTrigger
+        setLeftBarTrigger,
+        leftBarSoundChannelTrigger,
+        setLeftBarSoundChannelTrigger
+        
     }
 
     return (
