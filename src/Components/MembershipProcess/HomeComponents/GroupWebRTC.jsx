@@ -10,6 +10,7 @@ import SoundPlayer from "@/Tools/SoundPlayer";
 import toast from "react-hot-toast";
 import { createClient } from "@supabase/supabase-js";
 import { useUserContext } from "@/Context/UserContext";
+import User from "../../../../public/icons/user.svg"
 
 export default function Home() {
   const [roomId, setRoomId] = useState("genel");
@@ -19,9 +20,8 @@ export default function Home() {
 
   const [notificationMode, setNotificationMode] = useState("");
   const [notificationTrigger, setNotificationTrigger] = useState(0);
-  const [members,setMembers] = useState("noValue");
 
-  const { roomIdGlobalForCall, userCallConnected, setUserCallConnected, userCallLoading, setUserCallLoading, voiceRoomName,muteAll,setMuteAll,deafenAll,setDeafenAll,serverData,leftBarTrigger,leftBarSoundChannelTrigger} = useInterfaceContext();
+  const { roomIdGlobalForCall, userCallConnected, setUserCallConnected, userCallLoading, setUserCallLoading, voiceRoomName,muteAll,setMuteAll,deafenAll,setDeafenAll,serverData,leftBarTrigger,leftBarSoundChannelTrigger,setMembersOnSoundChannelData,membersOnSoundChannelData} = useInterfaceContext();
   const {user,userData} = useUserContext();
 
   const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
@@ -68,7 +68,7 @@ export default function Home() {
         console.log(error);
       }
       else{
-        setMembers(data);
+        setMembersOnSoundChannelData(data);
         liveGetUsersOnChannel();
       }
     }
@@ -84,9 +84,7 @@ export default function Home() {
     }
   }, [leftBarTrigger])
 
-  useEffect(() => {
-    console.log(members)
-  }, [members])
+ 
 
   const channelRef = useRef(null); // dinleme kanalını saklamak için
 
@@ -126,7 +124,7 @@ export default function Home() {
       if (error) {
         console.error('Fetch error:', error);
       } else {
-        setMembers(data);
+        setMembersOnSoundChannelData(data);
       }
   
       // 🔥 Şimdi realtime kanal kur
@@ -140,7 +138,7 @@ export default function Home() {
             payload.new.joinSoundChannelId === roomIdGlobalForCall &&
             payload.new.serverId === serverData[0].id
           ) {
-            setMembers((prev) => [...prev, payload.new]);
+            setMembersOnSoundChannelData((prev) => [...prev, payload.new]);
           }
         })
   
@@ -151,7 +149,7 @@ export default function Home() {
             payload.old.joinSoundChannelId === roomIdGlobalForCall &&
             payload.old.serverId === serverData[0].id
           ) {
-            setMembers((prev) => prev.filter((user) => user.id !== payload.old.id));
+            setMembersOnSoundChannelData((prev) => prev.filter((user) => user.id !== payload.old.id));
           }
         })
   
@@ -407,7 +405,18 @@ export default function Home() {
     <div className="flex flex-col justify-between h-full py-12 items-center">
       <SoundPlayer trigger={notificationTrigger} mode={notificationMode}/>
       <h1 className="text-4xl title-font-bold">Oda: {voiceRoomName}</h1>
-
+      <div className="overflow-auto flex items-center gap-4 max-h-[400px]">
+        {membersOnSoundChannelData && membersOnSoundChannelData.map((userOnChannel,key) => {
+          return(
+            <div key={key}>
+                <div className="flex flex-col items-center gap-3">
+                  <Image src={User} className="w-[50px]" alt="User"/>
+                  <p className="text-font text-2xl">{userOnChannel.username}</p>
+                </div>
+            </div>
+          )
+        })}  
+      </div>
       {userCallConnected ? 
       <>
         {userCallLoading ? <Loading2 /> : 

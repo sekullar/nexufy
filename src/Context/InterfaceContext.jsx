@@ -28,6 +28,7 @@ export const InterfaceProvider = ({ children }) => {
     const [deafenAll,setDeafenAll] = useState(false);                                                   // Global deafen
     const [leftBarTrigger,setLeftBarTrigger] = useState(0)                                              // Soldaki menüye tıklandığında tetikleme başlatır
     const [leftBarSoundChannelTrigger,setLeftBarSoundChannelTrigger] = useState(0)                      // Soldaki menüye, tıklandığında ses tetiklemesi
+    const [membersOnSoundChannelData,setMembersOnSoundChannelData] = useState([]);                 // Kanaldaki üyeleri gösterir
 
 
 
@@ -77,7 +78,9 @@ export const InterfaceProvider = ({ children }) => {
         leftBarTrigger,
         setLeftBarTrigger,
         leftBarSoundChannelTrigger,
-        setLeftBarSoundChannelTrigger
+        setLeftBarSoundChannelTrigger,
+        membersOnSoundChannelData,
+        setMembersOnSoundChannelData
         
     }
 
