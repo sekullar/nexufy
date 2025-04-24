@@ -133,10 +133,13 @@ export default function Home() {
   
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'soundChannelInfo' }, (payload) => {
           console.log('Yeni katılan:', payload.new);
+          console.log("CHECKS:",payload.new.joinSoundChannelId,roomIdGlobalForCall)
+          console.log("CHECKS 2:",payload.new.serverId,serverData[0].id)
+
   
           if (
-            payload.new.joinSoundChannelId === roomIdGlobalForCall &&
-            payload.new.serverId === serverData[0].id
+            String(payload.new.joinSoundChannelId) === String(roomIdGlobalForCall) &&
+            String(payload.new.serverId) === String(serverData[0].id)
           ) {
             setMembersOnSoundChannelData((prev) => [...prev, payload.new]);
           }
@@ -146,8 +149,8 @@ export default function Home() {
           console.log('Kanalı terkeden:', payload.old);
   
           if (
-            payload.old.joinSoundChannelId === roomIdGlobalForCall &&
-            payload.old.serverId === serverData[0].id
+            String(payload.new.joinSoundChannelId) === String(roomIdGlobalForCall) &&
+            String(payload.new.serverId) === String(serverData[0].id)
           ) {
             setMembersOnSoundChannelData((prev) => prev.filter((user) => user.id !== payload.old.id));
           }
