@@ -89,6 +89,10 @@ export default function Home() {
   const channelRef = useRef(null); // dinleme kanalını saklamak için
 
   useEffect(() => {
+    console.log(membersOnSoundChannelData);
+  }, [membersOnSoundChannelData])
+
+  useEffect(() => {
     if (leftBarSoundChannelTrigger !== 0) {
       liveGetUsersOnChannel();
     }
@@ -145,16 +149,23 @@ export default function Home() {
           }
         })
   
-        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'soundChannelInfo' }, (payload) => {
-          console.log('Kanalı terkeden:', payload.old);
-  
-          if (
-            String(payload.new.joinSoundChannelId) === String(roomIdGlobalForCall) &&
-            String(payload.new.serverId) === String(serverData[0].id)
-          ) {
-            setMembersOnSoundChannelData((prev) => prev.filter((user) => user.id !== payload.old.id));
+        .on('postgres_changes',
+          { event: 'DELETE', schema: 'public', table: 'soundChannelInfo' },
+          (payload) => {
+            const oldRecord = payload.old;
+            console.log("payload", payload);
+        
+            if (oldRecord?.id) {
+              console.log("SİLİYOM REİS ID:", oldRecord.id);
+              setMembersOnSoundChannelData(prev =>
+                prev.filter(u => String(u.id) !== String(oldRecord.id))
+              );
+            } else {
+              console.warn("oldRecord boş ya da id yok aq");
+            }
           }
-        })
+        )
+        
   
         .subscribe();
   
@@ -442,7 +453,6 @@ export default function Home() {
 
 
 
-// SES KANALINA KATILANLARI GÖREBİLİYORUZ LİSTELEMİYORUZ REALTİME GÖRME VE ÖNCEKİLERİ GÖRME KOYACAĞIZ
-
+// PAYLOAD.OLD SADECE İD VERİYOR İD BARINDIRDIĞI İÇİN SDAECE İDYE GÖRE SİLDİREBİLİRİZ
 
 
