@@ -11,6 +11,11 @@ import toast from "react-hot-toast";
 import { createClient } from "@supabase/supabase-js";
 import { useUserContext } from "@/Context/UserContext";
 import User from "../../../../public/icons/user.svg"
+import {GoodPing} from "../../../../public/icons/good.svg"
+import {SemiGoodPing} from "../../../../public/icons/semigood.svg"
+import {ImportantPing} from "../../../../public/icons/important.svg"
+import {BadPing} from "../../../../public/icons/bad.svg"
+
 
 export default function Home() {
   const [roomId, setRoomId] = useState("genel");
@@ -18,10 +23,11 @@ export default function Home() {
   const localStreamRef = useRef(null);
   const peersRef = useRef({});
 
+
   const [notificationMode, setNotificationMode] = useState("");
   const [notificationTrigger, setNotificationTrigger] = useState(0);
 
-  const { roomIdGlobalForCall, userCallConnected, setUserCallConnected, userCallLoading, setUserCallLoading, voiceRoomName,muteAll,setMuteAll,deafenAll,setDeafenAll,serverData,leftBarTrigger,leftBarSoundChannelTrigger,setMembersOnSoundChannelData,membersOnSoundChannelData} = useInterfaceContext();
+  const { roomIdGlobalForCall, userCallConnected, setUserCallConnected, userCallLoading, setUserCallLoading, voiceRoomName,muteAll,setMuteAll,deafenAll,setDeafenAll,serverData,leftBarTrigger,leftBarSoundChannelTrigger,setMembersOnSoundChannelData,membersOnSoundChannelData,ping,setPing} = useInterfaceContext();
   const {user,userData} = useUserContext();
 
   const supabaseUrl = process.env.NEXT_PUBLIC_DBURL;
@@ -87,6 +93,25 @@ export default function Home() {
  
 
   const channelRef = useRef(null); // dinleme kanalını saklamak için
+
+  useEffect(() => {
+    if (!socketRef.current) return;
+  
+    let pingInterval;
+  
+    socketRef.current.on("pong-reply", (sentTime) => {
+      const latency = Date.now() - sentTime;
+      setPing(latency);
+      console.log("📶 Ping:", latency + "ms");
+    });
+  
+    pingInterval = setInterval(() => {
+      const now = Date.now();
+      socketRef.current.emit("ping-check", now);
+    }, 1000); // her 5 saniyede bir ping at
+  
+    return () => clearInterval(pingInterval);
+  }, [socketRef.current]);
 
   useEffect(() => {
     console.log(membersOnSoundChannelData);
@@ -241,12 +266,14 @@ export default function Home() {
     return peer;
   };
 
+  
+
   const joinRoom = async () => {
     setNotificationMode("joinChannel")
     setNotificationTrigger(Date.now());
     setUserCallConnected(true);
     setUserCallLoading(true);
-    socketRef.current = io("https://nexufy-socket-server.onrender.com", {
+    socketRef.current = io("https://nexufy-socket-server.fly.dev", {
       path: "/api/signal",
     });
 
@@ -415,17 +442,26 @@ export default function Home() {
     };
   }, []);
 
+  const degerTip = typeof ping;
+
   return (
-    <div className="flex flex-col justify-between h-full py-12 items-center">
+    <div className="flex flex-col justify-between h-full py-12 items-center relative">
       <SoundPlayer trigger={notificationTrigger} mode={notificationMode}/>
       <h1 className="text-4xl title-font-bold">Oda: {voiceRoomName}</h1>
+      <div className="flex items-center">
+        {/* ping yardıralacak */}
+        {degerTip}
+        <p className="text-font-bold text-3xl">{ping}</p>
+      </div>
       <div className="overflow-auto flex items-center gap-4 max-h-[400px]">
         {membersOnSoundChannelData && membersOnSoundChannelData.map((userOnChannel,key) => {
           return(
             <div key={key}>
                 <div className="flex flex-col items-center gap-3">
-                  <Image src={User} className="w-[50px]" alt="User"/>
-                  <p className="text-font text-2xl">{userOnChannel.username}</p>
+                  <div className="bg-black rounded-full p-6">
+                    <Image src={User} className="w-[40px]" alt="User"/>
+                  </div>  
+                  <p className="text-font text-xl w-[230px] truncate">{userOnChannel.username}</p>
                 </div>
             </div>
           )
@@ -453,6 +489,5 @@ export default function Home() {
 
 
 
-// PAYLOAD.OLD SADECE İD VERİYOR İD BARINDIRDIĞI İÇİN SDAECE İDYE GÖRE SİLDİREBİLİRİZ
-
+// PİNGİ ALDIK YAZDIRMADIK
 
