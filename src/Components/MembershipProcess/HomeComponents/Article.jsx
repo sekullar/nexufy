@@ -84,7 +84,7 @@ const Article = ({chatInner}) => {
             <div className="h-spec-screen bg-theme-gray-2 w-full flex justify-center items-center">
                 <Loading2 />
             </div> : 
-            <div className="h-spec-screen bg-theme-gray-2 w-full flex justify-center items-center">
+            <div className="h-spec-screen bg-theme-gray-2 w-full flex justify-center items-center relative">
                 {articleValue == "starter" ? 
                 <>
                     <div className="flex flex-col items-center">

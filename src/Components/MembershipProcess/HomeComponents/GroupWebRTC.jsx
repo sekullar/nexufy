@@ -11,10 +11,10 @@ import toast from "react-hot-toast";
 import { createClient } from "@supabase/supabase-js";
 import { useUserContext } from "@/Context/UserContext";
 import User from "../../../../public/icons/user.svg"
-import {GoodPing} from "../../../../public/icons/good.svg"
-import {SemiGoodPing} from "../../../../public/icons/semigood.svg"
-import {ImportantPing} from "../../../../public/icons/important.svg"
-import {BadPing} from "../../../../public/icons/bad.svg"
+import GoodPing from "../../../../public/icons/good.svg"
+import SemiGoodPing from "../../../../public/icons/semigood.svg"
+import ImportantPing from "../../../../public/icons/important.svg"
+import BadPing from "../../../../public/icons/bad.svg"
 
 
 export default function Home() {
@@ -273,7 +273,7 @@ export default function Home() {
     setNotificationTrigger(Date.now());
     setUserCallConnected(true);
     setUserCallLoading(true);
-    socketRef.current = io("https://nexufy-socket-server.fly.dev", {
+    socketRef.current = io("https://nexufy-socket-server-sparkling-glade-1706.fly.dev", {
       path: "/api/signal",
     });
 
@@ -442,16 +442,14 @@ export default function Home() {
     };
   }, []);
 
-  const degerTip = typeof ping;
 
   return (
-    <div className="flex flex-col justify-between h-full py-12 items-center relative">
+    <div className="flex flex-col justify-between h-full py-12 items-center ">
       <SoundPlayer trigger={notificationTrigger} mode={notificationMode}/>
       <h1 className="text-4xl title-font-bold">Oda: {voiceRoomName}</h1>
-      <div className="flex items-center">
-        {/* ping yardıralacak */}
-        {degerTip}
-        <p className="text-font-bold text-3xl">{ping}</p>
+      <div className="flex items-center absolute top-0 end-0 me-6 mt-6">
+        {ping <= 100 ? <> <Image className="w-[40px]" src={GoodPing} alt="Good Ping" /></> : ping > 100 && ping <= 300 ? <><Image className="w-[40px]" src={SemiGoodPing} alt="SemiGood Ping"/></> : ping > 300 && ping <= 600 ? <><Image className="w-[40px]" src={ImportantPing} alt="Important Ping"/></> : ping > 600 ? <><Image className="w-[40px]" src={BadPing} alt="Bad Ping" /></> : ""}
+        <p className="text-font-bold text-3xl ms-3">{ping}</p>
       </div>
       <div className="overflow-auto flex items-center gap-4 max-h-[400px]">
         {membersOnSoundChannelData && membersOnSoundChannelData.map((userOnChannel,key) => {
@@ -461,7 +459,7 @@ export default function Home() {
                   <div className="bg-black rounded-full p-6">
                     <Image src={User} className="w-[40px]" alt="User"/>
                   </div>  
-                  <p className="text-font text-xl w-[230px] truncate">{userOnChannel.username}</p>
+                  <p className="text-font text-xl w-[230px] text-center truncate">{userOnChannel.username}</p>
                 </div>
             </div>
           )
