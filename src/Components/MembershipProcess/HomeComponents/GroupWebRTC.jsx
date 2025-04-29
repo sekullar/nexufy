@@ -225,7 +225,14 @@ export default function Home() {
     }
 
     const peer = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+      iceServers: [{ urls: [
+        "stun:stun.l.google.com:19302",
+        "stun:stun1.l.google.com:19302",
+        "stun:stun2.l.google.com:19302",
+        "stun:stun.stunprotocol.org:3478",
+        "stun:stun.1und1.de",
+        "stun:stun.sipgate.net"
+      ] }],
     });
 
     peer.onicecandidate = (event) => {
