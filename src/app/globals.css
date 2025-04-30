@@ -291,3 +291,43 @@ body {
 #check2 .accordion-start .px-2 [data-slot="base"] h2 [data-slot="trigger"] div {
   width:100%
 }
+
+.createTextChannelSelectBackground div div button{
+  background-color: #404040;
+  color: white;
+  transition: all .3s ease;
+}
+
+.createTextChannelSelectBackground div div button:hover{
+  background-color: #404040 !important;
+}
+
+.createTextChannelSelectBackground div div button[data-hover="true"] {
+  background-color: #393939 !important; /* ya da ne vereceksen */
+}
+
+
+.createTextChannelSelectBackground div div button div span{
+  color: #fff !important;
+}
+
+[data-slot="content"] {
+  /* buraya stilini yaz */
+  /* background-color: #404040; örnek */
+}
+
+[data-slot="popover"] div div div div ul li {
+  border: 0px solid transparent;
+  outline: 0px;
+}
+
+[data-hover="true"]{
+}
+
+.data-\[hover\=true\]\:text-default-foreground[data-hover="true"]{
+}
+
+
+[data-slot="popover"] div [data-slot="content"]{
+  background-color: #404040;
+}

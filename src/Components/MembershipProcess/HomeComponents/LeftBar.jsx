@@ -20,7 +20,7 @@ const LeftBar = () => {
 
     const [messages, setMessages] = useState([]);
     const [sideBarActive, setSideBarActive] = useState(false);
-    const {serverData, setArticleValue, setMessageHistory, setArticleLoading, setLastSelectedTextChannel,setHeaderChannelName,setRoomIdGlobalForCall,setVoiceRoomName,leftBarRefreshState,setModalValueNames,setModalValueTrigger,setModalValueId,setLeftBarTrigger,setLeftBarSoundChannelTrigger} = useInterfaceContext();
+    const {serverData, setArticleValue, setMessageHistory, setArticleLoading, setLastSelectedTextChannel,setHeaderChannelName,setRoomIdGlobalForCall,setVoiceRoomName,leftBarRefreshState,setModalValueNames,setModalValueTrigger,setModalValueId,setLeftBarTrigger,setLeftBarSoundChannelTrigger,modalValueNames} = useInterfaceContext();
     const [loading, setLoading] = useState(false);
     const [channelData, setChannelData] = useState([]);
     const [createModal,setCreateModal] = useState(false);
@@ -28,13 +28,18 @@ const LeftBar = () => {
     const [closeInner,setCloseInner] = useState(0);
     const [channelType,setChannelType] = useState("");
     const [channelLoading,setChannelLoading] = useState(false);
-    const [modalType,setModalType] = useState("createProcessLeftBar")
+    const [modalType,setModalType] = useState("");
+    const [modalTypeTrigger,setModalTypeTrigger] = useState("");
 
     useEffect(() => {
         if(closeInner != 0){
             setCreateModal(false);
         }
     }, [closeInner])
+
+    useEffect(() => {
+        console.log("tttric",modalValueNames)
+    }, [modalValueNames])
 
     useEffect(() => {
         if(leftBarRefreshState != 0){
@@ -259,9 +264,14 @@ const LeftBar = () => {
 
     useEffect(() => {
         if (serverData.length > 0) {
-            listenMessages(serverData[0].id, serverData[0].textChannelId);
+            const sub = listenMessages(serverData[0].id, serverData[0].textChannelId);
+    
+            return () => {
+                supabase.removeChannel(sub);
+            };
         }
     }, [serverData]);
+    
 
     const clickLeftBar = (process) => {
         if (channelType === process) {
@@ -271,12 +281,18 @@ const LeftBar = () => {
             setSideBarActive(true);
         }
     };
+
+    useEffect(() => {
+        console.log("modalType",modalType);
+    }, [modalType])
+
+    
     
 
     return (
         <>  
         <div id="check">
-            <ModalAll processPar={modalType} openTrigger={createModal} closeTrigger={setCloseInner}/>
+            <ModalAll processPar={modalType} openTrigger={createModal} processOuter={setModalType} closeTrigger={setCloseInner}/>
             <div className="flex h-spec-screen bg-theme-gray-1">
                 <div className="flex flex-col justify-between bg-theme-gray-1 h-spec-screen p-2 w-[65px]">
                     <div className="flex flex-col gap-12 mt-12">
@@ -306,12 +322,12 @@ const LeftBar = () => {
                                         className="transition-all text-lg text-font-bold duration-300 [&[data-state=open]_.icon]:rotate-180"
                                         title={
                                             <div className="flex items-center justify-between group w-full">
-                                                <span>{category.categoryName}</span>
+                                                <span className="text-white">{category.categoryName}</span>
                                                 <Image 
                                                     src={Edit} 
                                                     alt="Edit" 
                                                     className="w-[19px] h-[19px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-                                                    onClick={(e) => {e.stopPropagation(); setModalValueNames(category.categoryName); setModalValueId(category.id); setModalValueTrigger(Date.now()); setModalType("categoryEdit"); setCreateModal(!createModal);}}/>
+                                                    onClick={(e) => {e.stopPropagation(); setModalType("categoryEdit"); setModalValueNames(category.categoryName); setModalValueId(category.id); setModalValueTrigger(Date.now());  setCreateModal(!createModal);}}/>
                                             </div>}>
                                         <ul>
                                             {category.channels.map((channel) => (
@@ -319,7 +335,7 @@ const LeftBar = () => {
                                                     <span>
                                                         {channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""}
                                                     </span>
-                                                    <Image src={Edit} alt="Edit"  className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer" onClick={(e) => {e.stopPropagation(); setModalType(channelType == "text" ? "textChannelEdit" : channelType == "sound" ? "soundChannelEdit" : ""); setCreateModal(!createModal);}}/>
+                                                    <Image src={Edit} alt="Edit"  className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer" onClick={(e) => {e.stopPropagation(); setModalValueId(channel.id); setModalValueNames(channelType == "text" ? channel.textChannelName : channelType == "sound" ? channel.channelName : ""); setModalType(channelType == "text" ? "textChannelEdit" : channelType == "sound" ? "soundChannelEdit" : ""); setCreateModal(!createModal);}}/>
                                                 </li>
                                             ))}
                                         </ul>
@@ -340,4 +356,6 @@ export default LeftBar;
 
 
 
-// LEFT BAR EĞER SOUND CHANNEŞ TIKLANDIYSA YENİ BİR DİNLEME KAPATILACKA VE KANALDA OLANALR YAZDIRALACAK
+
+
+// STATE DEĞİŞMEDİĞİ İÇİN CATEGORY TETİKLENMİYOR (?)

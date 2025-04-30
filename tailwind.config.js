@@ -1,8 +1,10 @@
+const {heroui} = require('@heroui/theme');
 // tailwind.config.js
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx,html}",
     "./pages/**/*.{js,jsx,ts,tsx,html}",
+    "./node_modules/@heroui/theme/dist/components/(accordion|select|divider|form|listbox|popover|button|ripple|spinner|scroll-shadow).js"
   ],
   theme: {
     extend: {
@@ -74,5 +76,5 @@ module.exports = {
         }
     }
 },
-plugins: [],
+  plugins: [heroui()],
 }

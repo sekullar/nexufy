@@ -28,7 +28,8 @@ export const InterfaceProvider = ({ children }) => {
     const [deafenAll,setDeafenAll] = useState(false);                                                   // Global deafen
     const [leftBarTrigger,setLeftBarTrigger] = useState(0)                                              // Soldaki menüye tıklandığında tetikleme başlatır
     const [leftBarSoundChannelTrigger,setLeftBarSoundChannelTrigger] = useState(0)                      // Soldaki menüye, tıklandığında ses tetiklemesi
-    const [membersOnSoundChannelData,setMembersOnSoundChannelData] = useState([]);                      // Kanaldaki üyeleri gösterir
+    const [membersOnSoundChannelData,setMembersOnSoundChannelData] = useState([]);                      // Ses kanalındaki üyeleri gösterir
+    const [modalValueType,setModalValueType] = useState("");
     const [ping,setPing] = useState(0);
 
 
@@ -82,6 +83,8 @@ export const InterfaceProvider = ({ children }) => {
         setLeftBarSoundChannelTrigger,
         membersOnSoundChannelData,
         setMembersOnSoundChannelData,
+        modalValueType,
+        setModalValueType,
         ping,
         setPing
 
